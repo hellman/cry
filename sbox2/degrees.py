@@ -36,7 +36,6 @@ class Degrees(object):
                         clause *= v
                 anf += clause
             res.append(anf)
-            print anf
         return res
 
     def degrees(self):
