@@ -31,8 +31,9 @@ def feistel_round_add(n, func, do_swap=False):
 
 
 @register
-def feistel_network_xor(n, nrounds, funcs=None, permutations=True, degree=None):
+def feistel_network_xor(n, nrounds=None, funcs=None, permutations=True, degree=None):
     if funcs is None:
+        assert nrounds is not None
         assert (not permutations) or (degree is None), "Not implemented to generate permutations of arbitrary degree"
         gen = random_function
         if permutations:

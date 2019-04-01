@@ -1,6 +1,7 @@
 from .base import sbox_mixin
 
 from cryptools.sagestuff import matrix, GF
+from cryptools.binary import tobin
 
 
 @sbox_mixin
