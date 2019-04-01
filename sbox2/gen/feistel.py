@@ -4,27 +4,27 @@ from .simple import random_function, random_permutation, random_sbox_of_degree, 
 
 
 @register
-def feistel_round_xor(n, func, do_swap=False):
+def feistel_round_xor(n, func, swap=False):
     res = []
     for al in xrange(2**n):
         for ar in xrange(2**n):
             l, r = al, ar
             l ^= func(r)
-            if do_swap:
+            if swap:
                 l, r = r, l
             res.append((l << n) | r)
     return res
 
 
 @register
-def feistel_round_add(n, func, do_swap=False):
+def feistel_round_add(n, func, swap=False):
     mask = (1 << n) - 1
     res = []
     for al in xrange(2**n):
         for ar in xrange(2**n):
             l, r = al, ar
             l = (l + func(r)) & mask
-            if do_swap:
+            if swap:
                 l, r = r, l
             res.append((l << n) | r)
     return res
@@ -55,7 +55,7 @@ def feistel_network_xor(n, nrounds=None, funcs=None, permutations=True, degree=N
 
 
 @register
-def feistel_round_minicipher(n, func=None, do_swap=False):
+def feistel_round_minicipher(n, func=None, swap=False):
     if func is None:
         func = random_minicipher(n)
     res = []
@@ -63,7 +63,7 @@ def feistel_round_minicipher(n, func=None, do_swap=False):
         for ar in xrange(2**n):
             l, r = al, ar
             l = func[r][l]
-            if do_swap:
+            if swap:
                 l, r = r, l
             res.append((l << n) | r)
     return res
