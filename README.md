@@ -1,4 +1,4 @@
-# A Toolkit for Cryptanalytic Research
+# SageMath/Python Toolkit for Cryptanalytic Research
 
 This repository contains a bunch of various crypto-related algorithms implemented in Python 2 and SageMath. Pure Python code is located in cryptools.py package and can be imported from python code. The other modules must be imported from the SageMath interpreter.
 
