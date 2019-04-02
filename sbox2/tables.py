@@ -10,6 +10,8 @@ from collections import Counter
 
 from cryptools.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
 from cryptools.matrix import mat_distribution
+from cryptools.py.anf import mobius
+from cryptools.binary import tobin
 
 from .base import sbox_mixin
 
@@ -158,22 +160,18 @@ class Tables(object):
         return (mat.lift() / (mod / 2)).change_ring(GF(2))
 
     def hdim(self, right_to_left=False):
-        res = matrix(GF(2), self.m, self.n)
-        for i in xrange(self.m):
-            if right_to_left: i = self.m - 1 - i
-            for j in xrange(self.n):
-                if right_to_left: j = self.n - 1 - j
-
-                u = Integer(2**(self.m - 1 - i))
-                v = Integer(2**(self.n - 1 - j))
-                cur = 0
-                for x in xrange(2**self.m):
-                    cur += (
-                        (u & x).popcount() & 1 == (v & self[x]).popcount() & 1
-                    )
-                res[j,i] = (cur % 4) / 2
+        """
+        hdim[i,j] = i-th output bit contains monomial x1...xn/xj
+        """
+        res = matrix(GF(2), self.in_bits, self.out_bits)
+        anf = mobius(tuple(self))
+        for j in xrange(self.in_bits):
+            mask = (1 << self.in_bits) - 1
+            mask ^= 1 << (self.in_bits - 1 - j)
+            res.set_column(j, tobin(anf[mask], self.out_bits))
+        if right_to_left:
+            res = res[::-1,::-1]
         return res
-
 
     def ddt_distrib_fast(self):
         inp = "%d\n" % self.insize
