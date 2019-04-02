@@ -1,10 +1,10 @@
-from .gen import register
-
-from .simple import random_function, random_permutation, random_sbox_of_degree, random_minicipher
+from .gen import register, gen
 
 
 @register
-def feistel_round_xor(n, func, swap=False):
+def feistel_round_xor(func, swap=False):
+    func = gen.SBox2(func)
+    n = func.in_bits
     res = []
     for al in xrange(2**n):
         for ar in xrange(2**n):
@@ -17,7 +17,9 @@ def feistel_round_xor(n, func, swap=False):
 
 
 @register
-def feistel_round_add(n, func, swap=False):
+def feistel_round_add(func, swap=False):
+    func = gen.SBox2(func)
+    n = func.in_bits
     mask = (1 << n) - 1
     res = []
     for al in xrange(2**n):
@@ -31,16 +33,20 @@ def feistel_round_add(n, func, swap=False):
 
 
 @register
-def feistel_network_xor(n, nrounds=None, funcs=None, permutations=True, degree=None):
+def feistel_network_xor(funcs=None, n=None, nrounds=None, permutations=False, degree=None):
     if funcs is None:
+        assert n is not None
         assert nrounds is not None
         assert (not permutations) or (degree is None), "Not implemented to generate permutations of arbitrary degree"
-        gen = random_function
+        fgen = gen.random_function
         if permutations:
-            gen = random_permutation
+            fgen = gen.random_permutation
         if degree:
-            gen = lambda n: random_sbox_of_degree(n, degree)
-        funcs = [gen(n) for i in xrange(nrounds)]
+            fgen = lambda n: gen.random_sbox_of_degree(n, degree)
+        funcs = [fgen(n) for i in xrange(nrounds)]
+    else:
+        funcs = map(gen.SBox2, funcs)
+        n = funcs[0].in_bits
 
     res = []
     for al in xrange(2**n):
@@ -57,7 +63,7 @@ def feistel_network_xor(n, nrounds=None, funcs=None, permutations=True, degree=N
 @register
 def feistel_round_minicipher(n, func=None, swap=False):
     if func is None:
-        func = random_minicipher(n)
+        func = gen.random_minicipher(n)
     res = []
     for al in xrange(2**n):
         for ar in xrange(2**n):

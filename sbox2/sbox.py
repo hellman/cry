@@ -1,4 +1,5 @@
 from .base import bases
+from .gen import gen
 
 try:
     from sage.crypto.sbox import SBox
@@ -12,6 +13,7 @@ SBox2 = type("SBox2", tuple(bases), {
 })
 SBox2.new = SBox2
 SBox2.gen.new = SBox2
+SBox2.gen.SBox2 = SBox2
 
 for base in bases:
     base.SBox2 = base.cls = base.new = SBox2

@@ -1,7 +1,8 @@
 class GeneratorCollector(object):
     def __init__(self):
         self.gens = {}
-        self.new = None
+        self.SBox2 = self.new = None
+
 
     def register(self, func, name=None):
         if name is None:
@@ -12,12 +13,12 @@ class GeneratorCollector(object):
 
     def __getattr__(self, name):
         f = self.gens[name]
-        return Sbox2Wrapper(f, self.new)
+        return SBox2Wrapper(f, self.new)
 
     make = None
 
 
-class Sbox2Wrapper(object):
+class SBox2Wrapper(object):
     def __init__(self, f, cls):
         self.f = f
         self.cls = cls
@@ -29,4 +30,3 @@ class Sbox2Wrapper(object):
 
 gen = GeneratorCollector()
 register = gen.register
-
