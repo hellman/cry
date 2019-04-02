@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-import sys, time
+import sys, time, os
 import ast
 from functools import wraps
 
@@ -22,14 +22,16 @@ from cryptools.sagestuff import loads, dumps
 #         open(fname, "wb").write(dumps(result))
 #         return result
 
-def sage_cache(filename_prefix):
+def sage_cache(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
     def deco(func):
         @wraps(func)
         def wrapper(*a, **k):
             cache_key = tuple(a) + tuple(sorted(k.items()))
             cache_key = H(str(cache_key))
 
-            filename = filename_prefix + "." + cache_key
+            filename = os.path.join(path, cache_key)
             try:
                 f = open(filename)
                 while True:
