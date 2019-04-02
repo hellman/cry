@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-from cryptools.py.boolean.anf.symbolic import Bit
+from cryptools.py.anf.symbolic import Bit
 
 def compute_anfs(bit):
     if bit.is_input():
