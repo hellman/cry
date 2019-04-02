@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-import sys
+import sys, time
 import ast
 from functools import wraps
 
@@ -32,18 +32,29 @@ def sage_cache(filename_prefix):
             filename = filename_prefix + "." + cache_key
             try:
                 f = open(filename)
-                f.readline()
+                while True:
+                    line = f.readline()
+                    if line.strip() == "===":
+                        break
+                    if not line.strip():
+                        raise EOFError()
                 return loads(f.read())
             except:
                 pass
 
             with open(filename, "w") as f:
+                t0 = time.time()
                 res = func(*a, **k)
-                f.write("Cache: %s(%s; %s)\n" % (
+                t1 = time.time()
+                # some metadata
+                f.write("cache: %s(%s; %s)\n" % (
                     func.__name__,
                     ", ".join(map(repr, a)),
-                    ", ".join("%s=%r" % item for item in sorted(k.items()))
+                    ", ".join("%s=%r" % item for item in sorted(k.items())),
                 ))
+                f.write("key: %s\n" % cache_key)
+                f.write("time: %r\n" % (t1 - t0))
+                f.write("===\n")
                 f.write(dumps(res))
             return res
         return wrapper
