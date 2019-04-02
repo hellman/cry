@@ -9,7 +9,7 @@ some imports fail and it is required so.
 
 from sage.plot.matrix_plot import matrix_plot
 
-from sage.structure.sage_object import loads, dumps
+from sage.misc.persist import loads, dumps
 
 from sage.matrix.constructor import matrix, identity_matrix, random_matrix
 from sage.modules.free_module_element import vector

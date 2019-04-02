@@ -1,93 +1,65 @@
-#-*- coding:utf-8 -*-
+import ast, pickle
+from functools import wraps
+import hashlib
+H = lambda s: hashlib.sha256(s).hexdigest()
 
-import sys
-import ast
-from hashlib import sha1
+def ast_cache(filename_prefix):
+    def deco(func):
+        @wraps(func)
+        def wrapper(*a, **k):
+            cache_key = tuple(a) + tuple(sorted(k.items()))
+            cache_key = H(str(cache_key))
 
-from cryptools.sagestuff import loads, dumps
+            filename = filename_prefix + "." + cache_key
+            try:
+                lines = list(open(filename))
+                assert lines[-1] == "EndCache"
+                cache_exists = True
+            except:
+                cache_exists = False
 
+            if cache_exists:
+                res = ast.literal_eval(lines[1])
+                # print "loaded cache"
+                return res
+            # print "computing & writing cache.."
+            with open(filename, "w") as f:
+                res = func(*a, **k)
+                f.write("Cache: %s(%s; %s)\n" % (
+                    func.__name__,
+                    ", ".join(map(repr, a)),
+                    ", ".join("%s=%r" % item for item in sorted(k.items()))
+                ))
+                assert ast.literal_eval(repr(res)) == res, "non-serializable res"
+                f.write(repr(res) + "\n")
+                f.write("EndCache")
+            return res
+        return wrapper
+    return deco
 
-def pickle_cache(fn):
-    fname = ".cache:%s:%s" % (fn.func_name, permanent_func_hash(fn)[:16])
-    try:
-        res = loads(open(fname).read())
-        print >>sys.stderr, "[i] reusing %s" % fname
-        return res
-    except (EOFError, IOError):
-        print >>sys.stderr, "[i] calculating %s" % fname
-        result = fn()
-        open(fname, "wb").write(dumps(result))
-        return result
+def pypickle_cache(filename_prefix):
+    def deco(func):
+        @wraps(func)
+        def wrapper(*a, **k):
+            cache_key = tuple(a) + tuple(sorted(k.items()))
+            cache_key = H(str(cache_key))
 
+            filename = filename_prefix + "." + cache_key
+            try:
+                f = open(filename)
+                f.readline()
+                return pickle.load(f)
+            except:
+                pass
 
-def single_cache(filename=None):
-    def cacher(fn):
-        fname = filename or ".cache:%s" % fn.func_name
-
-        hash = None
-        try:
-            hash, result = loads(open(fname).read())
-        except (EOFError, IOError):
-            pass
-
-        new_hash = permanent_func_hash(fn)
-        if hash == new_hash:
-            print >>sys.stderr, "[i] reusing %s (%s)" % (fname, new_hash)
-        else:
-            print >>sys.stderr, "[i] calculating %s (%s)" % (fname, new_hash)
-            result = fn()
-            print >>sys.stderr, "[i] saving %s (%s)" % (fname, new_hash)
-            open(fname, "wb").write(dumps((new_hash, result)))
-        return result
-    return cacher
-
-
-def single_load(filename):
-    return loads(open(filename).read())[1]
-
-
-def line_cache(fn):
-    fname = ".cache:%s:%s" % (fn.func_name, permanent_func_hash(fn)[:16])
-    try:
-        res = []
-        for line in open(fname):
-            line = line.strip()
-            if line == ":cache:finished:":
-                break
-            if line:
-                res.append(ast.literal_eval(line))
-        else:
-            print >>sys.stderr, "[i] cache incomplete %s: %s items" % (fname, len(res))
-            raise EOFError("Cache incomplete")
-        print >>sys.stderr, "[i] reusing %s: %s items" % (fname, len(res))
-        return res
-    except (EOFError, IOError):
-        print >>sys.stderr, "[i] calculating %s" % fname
-        fo = open(fname, "wb")
-        res = []
-        for obj in fn():
-            fo.write(repr(obj) + "\n")
-            res.append(obj)
-        fo.write(":cache:finished:")
-        fo.close()
-        print >>sys.stderr, "[i] calculated %s: %s items" % (fname, len(res))
-        return res
-
-
-def permanent_func_hash(fn):
-    res = []
-    code = fn.func_code
-    for attr in dir(code):
-        if attr == "co_consts":
-            for c in getattr(code, attr):
-                if "at 0x" in str(c):
-                    continue
-                res.append(c)
-            continue
-        if attr.startswith("co_") and attr != "co_firstlineno":
-            res.append(getattr(code, attr))
-    for g in code.co_names:
-        v = fn.func_globals.get(g, None)
-        if not callable(v):
-            res.append(str(fn.func_globals.get(g, None)))
-    return sha1(str(res)).hexdigest()
+            with open(filename, "w") as f:
+                res = func(*a, **k)
+                f.write("Cache: %s(%s; %s)\n" % (
+                    func.__name__,
+                    ", ".join(map(repr, a)),
+                    ", ".join("%s=%r" % item for item in sorted(k.items()))
+                ))
+                pickle.dump(res, f)
+            return res
+        return wrapper
+    return deco

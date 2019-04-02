@@ -3,6 +3,8 @@
 from collections import Counter, defaultdict
 from itertools import product, combinations
 
+from cryptools.py.env import *
+
 from cryptools.sagestuff import *
 
 from cryptools.sbox2 import SBox2
