@@ -2,6 +2,7 @@
 
 from cryptools.binary import swap_halves
 from cryptools.sagestuff import randint, Integer
+from cryptools.py.anf import mobius
 
 from .base import sbox_mixin
 
@@ -68,6 +69,9 @@ class Transform(object):
         B = self.SBox2.gen.random_affine_permutation(self.n)
         return A * self * B
 
+    def mobius(self):
+        return self.SBox2(mobius(tuple(self)), n=self.n)
+
 
 def squeeze_by_mask(x, mask):
     res = 0
@@ -86,3 +90,4 @@ def test_transform():
 
     s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
     assert s.xor(0, 3) == s ^ 3
+    assert s.mobius().mobius() == s
