@@ -33,7 +33,7 @@ class Tables(object):
         return res
 
     def ddt(self, zero_zero=True):
-        res = self.difference_distribution_matrix()
+        res = self.difference_distribution_table()
         if zero_zero:
             res = copy(res)
             res[0,0] = 0
@@ -51,7 +51,7 @@ class Tables(object):
         return kddt
 
     def lat(self, zero_zero=True, abs=False):
-        res = self.linear_approximation_matrix()
+        res = self.linear_approximation_table()
         if zero_zero:
             res = copy(res)
             res[0,0] = 0
