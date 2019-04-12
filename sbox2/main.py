@@ -66,9 +66,10 @@ class Main(object):
         if isinstance(index, int) or isinstance(index, Integer):
             return self.get(index)
         if isinstance(index, slice):
-            return tuple(self.get(index) for index in xrange(*index.indices(self.insize)))
+            return self.new( [self.get(index) for index in xrange(*index.indices(self.insize))], n=self.n )
         if isinstance(index, tuple) or isinstance(index, list):
             # binary vector (msb to lsb)
+            # not sure if confusing, maybe remove this API
             assert len(index) == self.m
             assert 0 <= min(index) <= max(index) <= 1
             return self.get(frombin(index))
