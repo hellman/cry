@@ -3,8 +3,10 @@
 from itertools import product
 
 from cryptools.sagestuff import randint, Integer, shuffle
+from cryptools.binary import hw, concat
 
-from .gen import register
+
+from .gen import register, gen
 
 
 @register
@@ -38,6 +40,12 @@ def parallel(funcs, width=None):
             fully = (fully << w) | f(x)
         res.append(fully)
     return res
+
+
+@register
+def concat_output(funcs):
+    sizes = tuple(f.out_bits for f in funcs)
+    return [concat(*ys, sizes=sizes) for ys in zip(funcs)]
 
 
 @register
@@ -77,6 +85,11 @@ def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
             y |= val << e
         res.append(y)
     return res
+
+@register
+def random_Boolean_function_of_degree(m, d):
+    anf = [randint(0, 1) if hw(x) <= d else 0 for x in xrange(2**m)]
+    return gen.SBox2(anf, n=1).mobius()
 
 @register
 def random_involution(n):
