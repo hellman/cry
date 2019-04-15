@@ -25,7 +25,9 @@ class SBox2Wrapper(object):
 
     def __call__(self, *a, **k):
         res = self.f(*a, **k)
-        return self.cls(res)
+        if not isinstance(res, self.cls):
+            res = self.cls(res)
+        return res
 
 
 gen = GeneratorCollector()
