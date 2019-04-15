@@ -30,3 +30,4 @@ from sage.arith.all import lcm, gcd
 from sage.crypto.boolean_function import BooleanFunction
 
 from sage.combinat.combination import Combinations
+from sage.functions.other import binomial
