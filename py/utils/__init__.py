@@ -3,6 +3,7 @@
 import sys
 import time
 from .cache import *
+from contextlib import contextmanager
 
 
 class IntervalCheck(object):
@@ -14,6 +15,9 @@ class IntervalCheck(object):
         self.last_hit = time.time()
         self.interval = float(interval)
         assert self.interval > 0
+
+    def touch(self):
+        self.last_hit = time.time()
 
     def check(self):
         self.itr += 1
