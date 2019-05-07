@@ -61,7 +61,7 @@ class BitOP(OP):
                  symmetric=True,
                  arity=2),
 
-        NOT=dict(operator=lambda a: ~a,
+        NOT=dict(operator=lambda a: 1^a,
                  symbol="~",
                  arity=1),
 
