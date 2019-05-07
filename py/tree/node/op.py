@@ -42,6 +42,9 @@ class OP(object):
             raise NotImplementedError("Operator %s can not be evaluated" % self.name[op])
         return self.operator[op](*args)
 
+    def __contains__(self, op):
+        return op in self.name
+
 
 class BitOP(OP):
     OPS = dict(

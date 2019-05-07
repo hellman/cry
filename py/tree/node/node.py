@@ -8,6 +8,7 @@ class Node(object):
     meta = {}
 
     def __init__(self, op, *args, **kwargs):
+        assert op in self.OP
         self.op = op
         self.args = list(args)
         self.meta = self.meta.copy()
@@ -100,3 +101,4 @@ class Node(object):
         if self not in acc:
             acc[self] = self.OP.eval(self.op, [v.eval(acc) for v in self.args])
         return acc[self]
+
