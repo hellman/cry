@@ -6,7 +6,7 @@ class OP(object):
     OPS = {}
 
     def __init__(self):
-        self.free_id = 0
+        self.free_id = 10 # to avoid bugs
 
         self.name = {}
         self.arity = {}
@@ -73,10 +73,10 @@ class BitOP(OP):
                   arity=0),
 
         INPUT =dict(operator=None,
-                    symbol="x",
+                    symbol="i",
                     arity=0),
         OUTPUT=dict(operator=lambda a: a,
-                    symbol="@",
+                    symbol="o",
                     arity=1),
     )
 
