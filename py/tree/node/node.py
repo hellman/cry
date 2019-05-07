@@ -37,6 +37,23 @@ class Node(object):
         elif len(self.args) == 0:
             return sym
 
+    def __repr__(self):
+        cls = self.__class__.__name__
+
+        op = self.OP.name[self.op]
+
+        args = []
+        for sub in self.args:
+            if isinstance(sub, Node):
+                assert sub.__class__ == self.__class__
+                if sub.is_input():
+                    args.append(sub.args[0])
+                else:
+                    args.append("#%r" % (sub.id))
+            else:
+                args.append(`sub`)
+        return "<%s#%d = %s(%s)>" % (cls, self.id, op, ",".join(args))
+
     def __hash__(self):
         return hash(id(self))
 
