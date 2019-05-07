@@ -63,7 +63,7 @@ class BitOP(OP):
 
         NOT=dict(operator=lambda a: ~a,
                  symbol="~",
-                 arity=2),
+                 arity=1),
 
         ZERO=dict(operator=lambda: 0,
                   symbol="0",
