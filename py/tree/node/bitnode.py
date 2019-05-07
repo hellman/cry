@@ -8,7 +8,7 @@ class BitNode(Node):
 
     def make_binary(op):
         def f(a, b):
-            if isinstance(b, int): b = a.const(b)
+            if isinstance(b, (int, long)): b = a.const(b)
             return a.__class__(op, a, b)
         return f
 
@@ -30,7 +30,4 @@ class BitNode(Node):
 
     @classmethod
     def const(cls, v):
-        return cls.new(cls.OP.ONE) if v else cls.new(cls.OP.ZERO)
-
-BitNode.ZERO = BitNode.const(0)
-BitNode.ONE = BitNode.const(1)
+        return cls.new(cls.OP.ONE) if int(v) else cls.new(cls.OP.ZERO)

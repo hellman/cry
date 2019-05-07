@@ -13,6 +13,8 @@ class OptBitNode(BitNode):
     CANCEL_NEUTRAL = True
     XOR1_TO_NEGATION = True
 
+    _ONE = _ZERO = None
+
     # UNARY
     def __invert__(self):
         if self.CANCEL_DOUBLE_NOT and self.op == self.OP.NOT:
@@ -25,8 +27,9 @@ class OptBitNode(BitNode):
     # BINARY
     def make_binary(op):
         def f(a, b):
-            if isinstance(b, int): b = a.const(b)
+            if isinstance(b, (int, long)): b = a.const(b)
             a0, b0 = a, b
+
             # ensure b is constant if at least one is constant
             if a.is_const(): a, b = b, a
             if not b.is_const(): return a.new(op, a0, b0)
@@ -62,12 +65,12 @@ class OptBitNode(BitNode):
     @classmethod
     def const(cls, v):
         if cls.SINGLETON_CONSTANTS:
-            return cls.ONE if v else cls.ZERO
+            if cls._ONE is None:
+                cls._ZERO = cls(cls.OP.ZERO)
+                cls._ONE = cls(cls.OP.ONE)
+            return cls._ONE if int(v) else cls._ZERO
         else:
-            return cls.new(cls.OP.ONE) if v else cls.new(cls.OP.ZERO)
-
-OptBitNode.ZERO = OptBitNode.new(OptBitNode.OP.ZERO)
-OptBitNode.ONE = OptBitNode.new(OptBitNode.OP.ONE)
+            return cls(cls.OP.ONE) if int(v) else cls(cls.OP.ZERO)
 
 
 if __name__ == '__main__':
