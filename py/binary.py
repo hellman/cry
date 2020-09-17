@@ -1,7 +1,4 @@
-#-*- coding:utf-8 -*-
-
-from functools import partial
-
+from functools import partial, reduce
 from itertools import product
 
 
@@ -17,6 +14,7 @@ def rol(x, n, bits):
     x &= mask
     return ((x << n) | (x >> (bits - n))) & mask
 
+
 def ror(x, n, bits):
     """
         >>> hex( ror(0x1234, 4, 16) )
@@ -25,6 +23,7 @@ def ror(x, n, bits):
         '0x2341'
     """
     return rol(x, bits - n, bits)
+
 
 for w in (8, 16, 32, 64, 128):
     globals()["rol%d" % w] = partial(rol, bits=w)
@@ -47,11 +46,13 @@ def tobin(x, n):
     assert 0 <= x < 1<<n
     return tuple(map(int, bin(x).lstrip("0b").rjust(n, "0")))
 
+
 def sbin(x, n):
     '''
     MSB to LSB binary form in string
     '''
     return bin(x).lstrip("0b").rjust(n, "0")
+
 
 def frombin(v):
     '''
@@ -64,10 +65,12 @@ def frombin(v):
         >>> frombin(tobin(123123, 32))
         123123
     '''
-    return int("".join(map(str, v)), 2 )
+    return int("".join(map(str, v)), 2)
+
 
 def bitrev(x, n):
     return frombin(tobin(x, n)[::-1])
+
 
 def hamming(x):
     '''
@@ -89,7 +92,10 @@ def hamming(x):
         ans += x & 1
         x >>= 1
     return int(ans)
+
+
 hw = hamming
+
 
 def parity(v):
     """
@@ -114,6 +120,7 @@ def parity(v):
     """
     return hamming(v) & 1
 
+
 def scalar_int(a, b):
     """
     Scalar product of binary expansions of a and b (in integers)
@@ -130,6 +137,7 @@ def scalar_int(a, b):
         3
     """
     return hamming(a & b)
+
 
 def scalar_bin(a, b):
     """
@@ -148,6 +156,7 @@ def scalar_bin(a, b):
     """
     return parity(a & b)
 
+
 def bit_product(x, mask):
     """
     Bit product function
@@ -164,6 +173,7 @@ def bit_product(x, mask):
     """
     return int(x & mask == mask)
 
+
 def xorsum(*lst):
     """
     Xor variant of python's sum()
@@ -175,7 +185,7 @@ def xorsum(*lst):
         0
         >>> xorsum(x for x in range(8))
         0
-        >>> xorsum(xrange(8))
+        >>> xorsum(range(8))
         0
         >>> xorsum()
         0
@@ -186,56 +196,10 @@ def xorsum(*lst):
         lst = list(lst[0])
     return reduce(lambda a, b: a ^ b, lst)
 
+
 def allvecs(*dims):
     return product(*[range(2**d) for d in dims])
 
-
-def concat(*lst, **kwargs):
-    """
-    Actual sig:
-    concat(*lst, size=None, sizes=None)
-
-        >>> hex( concat(1, 2, 3, size=4) )
-        '0x123'
-        >>> hex( concat(1, 2, 3, sizes=(4, 8, 4)) )
-        '0x1023'
-        >>> hex( concat(*split(0x12345678, size=4, parts=8), size=4) )
-        '0x12345678'
-    """
-    size = kwargs.pop("size", None)
-    sizes = kwargs.pop("sizes", None)
-    if size:
-        assert sizes is None
-        sizes = [size] * len(lst)
-    else:
-        assert sizes
-    fully = 0
-    for y, w in zip(lst, sizes):
-        fully = (fully << w) | y
-    return fully
-
-
-def split(x, sizes=None, size=None, parts=None):
-    """
-        >>> split(0x123, size=4, parts=3)
-        (1, 2, 3)
-        >>> split(0x123, sizes=(8, 4))
-        (18, 3)
-    """
-    res = []
-    if parts:
-        assert size
-        assert sizes is None
-        sizes = [size] * parts
-    else:
-        assert sizes
-        assert parts is None
-        assert size is None
-        parts = len(sizes)
-    for w in reversed(sizes):
-        res.append(x & ((1 << w) - 1))
-        x >>= w
-    return tuple(res)[::-1]
 
 def concat_halves(l, r, h):
     '''
@@ -316,19 +280,21 @@ def test_binary():
     assert hamming(0) == hamming(0) == 0
     assert hamming(1) == hamming(1) == 1
     assert hamming(2) == hamming(2) == 1
-    v = 1889421344686260973171433197677248273467675043680169246693717736553773868585782209193108237
-    assert hamming(int(v)) == hamming(long(v)) == 159
+    v = 1889421344686260973171433197677248273467675043680169246693717736553773868585782209193108237  # noqa
+    assert hamming(int(v)) == hamming(v) == 159
 
-    assert tobin(0x1234, 20) == (0,0,0,0,  0,0,0,1,  0,0,1,0,   0,0,1,1,   0,1,0,0)
-    assert frombin((0,0,0,0,  0,0,0,1,  0,0,1,0,   0,0,1,1,   0,1,0,0)) == 0x1234
+    assert tobin(0x1234, 20) == (0,0,0,0,  0,0,0,1,  0,0,1,0,   0,0,1,1,   0,1,0,0)  # noqa
+    assert frombin((0,0,0,0,  0,0,0,1,  0,0,1,0,   0,0,1,1,   0,1,0,0)) == 0x1234  # noqa
 
     assert split(0x123, size=4, parts=3) == (1, 2, 3)
     assert concat(1, 2, 3, size=4) == 0x123
     assert swap_halves(0xab, 4) == 0xba
     assert split_halves(0xab, 4) == (0xa, 0xb)
 
+
 def str2bin(s):
     return map(int, "".join(bin(ord(c))[2:].zfill(8) for c in s))
+
 
 def bin2str(b):
     assert len(b) % 8 == 0

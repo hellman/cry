@@ -1,7 +1,6 @@
-#-*- coding:utf-8 -*-
+from .op import BitOP
+from .bitnode import BitNode
 
-from op import BitOP
-from bitnode import BitNode
 
 class OptBitNode(BitNode):
     OP = BitOP()
@@ -27,12 +26,15 @@ class OptBitNode(BitNode):
     # BINARY
     def make_binary(op):
         def f(a, b):
-            if isinstance(b, (int, long)): b = a.const(b)
+            if isinstance(b, int):
+                b = a.const(b)
             a0, b0 = a, b
 
             # ensure b is constant if at least one is constant
-            if a.is_const(): a, b = b, a
-            if not b.is_const(): return a.new(op, a0, b0)
+            if a.is_const():
+                a, b = b, a
+            if not b.is_const():
+                return a.new(op, a0, b0)
 
             if a.PRECOMPUTE_CONSTANTS:
                 # both consts
@@ -41,17 +43,23 @@ class OptBitNode(BitNode):
 
             if a.PRECOMPUTE_ANNIHILATION:
                 if b.is_const():
-                    if op == a.OP.AND and b.value() == 0: return a.const(0)
-                    if op == a.OP.OR  and b.value() == 1: return a.const(1)
+                    if op == a.OP.AND and b.value() == 0:
+                        return a.const(0)
+                    if op == a.OP.OR and b.value() == 1:
+                        return a.const(1)
 
             if a.CANCEL_NEUTRAL:
                 if b.is_const():
-                    if op == a.OP.AND and b.value() == 1: return a
-                    if op == a.OP.OR  and b.value() == 0: return a
-                    if op == a.OP.XOR and b.value() == 0: return a
+                    if op == a.OP.AND and b.value() == 1:
+                        return a
+                    if op == a.OP.OR and b.value() == 0:
+                        return a
+                    if op == a.OP.XOR and b.value() == 0:
+                        return a
 
             if a.XOR1_TO_NEGATION:
-                if op == a.OP.XOR and b.value() == 1: return ~a
+                if op == a.OP.XOR and b.value() == 1:
+                    return ~a
 
             return a.new(op, a0, b0)
         return f
@@ -77,16 +85,16 @@ if __name__ == '__main__':
     Bit = OptBitNode
     x = Bit.inputs("x", 8, tostr=True)
     y = ~(x[0] ^ x[1] & x[2]) ^ 1
-    print "expr", y
-    print "flattened:"
+    print("expr", y)
+    print("flattened:")
     for v in y.flatten():
-        print "   ", v
+        print("   ", v)
 
     def updict(d):
         # return {("x", k): v for k, v in d.items()}
         return {("x%d" % k): v for k, v in d.items()}
 
     y = ~(x[0] ^ x[1] & x[2])
-    print "1 =?", y.eval(updict({0: 1, 1: 1, 2: 1}))
+    print("1 =?", y.eval(updict({0: 1, 1: 1, 2: 1})))
     y = (x[0] ^ x[1] & x[2])
-    print "0 =?", y.eval(updict({0: 1, 1: 1, 2: 1}))
+    print("0 =?", y.eval(updict({0: 1, 1: 1, 2: 1})))

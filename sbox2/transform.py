@@ -1,5 +1,3 @@
-#-*- coding:utf-8 -*-
-
 from cryptools.binary import swap_halves
 from cryptools.sagestuff import randint, Integer
 from cryptools.py.anf import mobius
@@ -46,10 +44,13 @@ class Transform(object):
     def xor(self, inp=0, out=0):
         assert 0 <= inp < self.insize
         assert 0 <= out < self.outsize
-        return self.new([self[x ^ inp] ^ out for x in self.in_range()], n=self.n)
+        return self.new(
+            [self[x ^ inp] ^ out for x in self.in_range()],
+            n=self.n
+        )
 
     def __xor__(self, other):
-        if isinstance(other, int) or isinstance(other, long) or isinstance(other, Integer):
+        if isinstance(other, int) or isinstance(other, Integer):
             return self.xor(0, other)
         assert isinstance(other, self.base)
         assert self.in_bits == other.in_bits

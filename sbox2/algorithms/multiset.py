@@ -1,4 +1,3 @@
-#-*- coding:utf-8 -*-
 r"""
 
 Some simple checks for multiset properties in S-Boxes.
@@ -44,11 +43,10 @@ Example with balanced and unknown:
 
 """
 
-from collections import defaultdict, Counter
+from collections import defaultdict
 from itertools import product
 
 from cryptools.binary import tobin, frombin, concat, split
-from cryptools.sbox2 import SBox2
 
 PERM = "p"
 CONST = "c"
@@ -72,7 +70,7 @@ class Split(object):
 
     def check_single_permutation(self):
         res = {}
-        for pos in xrange(self.num_in):
+        for pos in range(self.num_in):
             inp = [CONST] * self.num_in
             inp[pos] = PERM
             inp = "".join(inp)
@@ -82,24 +80,25 @@ class Split(object):
         return res
 
     def propagate_single_permutation(self, pos):
-        outs_by_consts = [defaultdict(dict) for _ in xrange(self.num_out)]
+        outs_by_consts = [defaultdict(dict) for _ in range(self.num_out)]
         for x, y in enumerate(self.s):
             xs = split_by_width(x, self.num_in, self.width_in)
             ys = split_by_width(y, self.num_out, self.width_out)
-            key = tuple(xs[i] for i in xrange(self.num_in) if i != pos)
+            key = tuple(xs[i] for i in range(self.num_in) if i != pos)
             for j, y in enumerate(ys):
                 d = outs_by_consts[j][key]
                 d.setdefault(y, 0)
                 d[y] += 1
 
         out_prop = []
-        for j in xrange(self.num_out):
+        for j in range(self.num_out):
             has_const = False
             has_perm = False
             has_balanced = False
             has_unknown = False
             for key, d in outs_by_consts[j].items():
-                if self.width_in == self.width_out and len(d) == 2**self.width_in:
+                if self.width_in == self.width_out and\
+                   len(d) == 2**self.width_in:
                     has_perm = True
                     continue
                 if len(d) == 1:
@@ -166,14 +165,14 @@ class Split(object):
                 oswap = True
 
             T = []
-            for lk in xrange(2**w):
+            for lk in range(2**w):
                 t = []
-                for r in xrange(2**w):
+                for r in range(2**w):
                     x = (lk << w) | r
                     t.append(s[x] & mask)
                 T.append(t)
 
-            U = [list() for i in xrange(2**w)]
+            U = [list() for i in range(2**w)]
             for l, r in product(range(2**w), repeat=2):
                 x = (l << w) | r
                 r = T[l][r]
@@ -186,7 +185,7 @@ def split_by_width(x, n, w):
     l = n * w
     b = tobin(x, l)
     res = []
-    for i in xrange(0, len(b), w):
+    for i in range(0, len(b), w):
         res.append(frombin(b[i:i+w]))
     return res
 
@@ -194,6 +193,8 @@ def split_by_width(x, n, w):
 def print_minicipher(T, latex_letter=None):
     for k, t in enumerate(T):
         if latex_letter:
-            print "$%s_%x$ &" % (latex_letter, k), " & ".join(map(hex, t)), r"\\"
+            print(
+                "$%s_%x$ &" % (latex_letter, k), " & ".join(map(hex, t)), r"\\"
+            )
         else:
-            print "%x" % k, t
+            print("%x" % k, t)

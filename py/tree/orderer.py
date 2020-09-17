@@ -1,10 +1,8 @@
-#-*- coding:utf-8 -*-
+from collections import Counter
+from queue import PriorityQueue
+from random import randint
 
-from collections import Counter, defaultdict
-from Queue import PriorityQueue
-from random import randint, shuffle
-
-from node import OP
+from .node.op import OP
 
 
 class Multiset(object):
@@ -36,6 +34,7 @@ class Multiset(object):
     def __iter__(self):
         return self.data.__iter__()
 
+
 class ComputationOrder(object):
     ACTION_COMPUTE = "compute"
     ACTION_FREE = "free"
@@ -57,7 +56,9 @@ class ComputationOrder(object):
             mx = max(mx, counter)
         return mx
 
+
 CO = ComputationOrder
+
 
 class Orderer(object):
     def __init__(self, xbits, ybits, quiet=False):
@@ -75,14 +76,14 @@ class Orderer(object):
         self.composite = set()
 
         if not self.quiet:
-            print ":: CIRCUIT WALK START"
+            print(":: CIRCUIT WALK START")
         self.visited = set()
         for b in self.ybits:
             self.dfs(b)
         del self.visited
 
         if not self.quiet:
-            print ":: ORDERING START"
+            print(":: ORDERING START")
         code = tuple(self.generate(max_id_rush=max_id_rush))
         # print ":: CODE SIZE %d OPERATIONS" % len(code)
         return ComputationOrder(xbits=self.xbits, ybits=self.ybits, code=code)
@@ -97,12 +98,16 @@ class Orderer(object):
             self.indeg[b] = 0
             self.ready.put((b.id, b))
             if b.is_const():
-                # assert not b.is_const(), "not really needed assert, by better not to have consts for good orderings"
-                print "WARNING", "not really needed assert, by better not to have consts for good orderings"
+                # assert not b.is_const(),\
+                # "not really needed assert, by better not to have consts
+                # for good orderings"
+                print(
+                    "WARNING", "not really needed assert,",
+                    "by better not to have consts for good orderings"
+                )
                 for par in self.using[b]:
-                    print OP.name[par.op], OP.name[b.op]
+                    print(OP.name[par.op], OP.name[b.op])
                 quit(1)
-
 
             if b.is_input():
                 assert b.args[0] in [bb.args[0] for bb in self.xbits], b.args[0]
@@ -185,13 +190,16 @@ class Orderer(object):
 
         # print self.sequential.qsize(), self.ready.qsize(), len(self.queue)
         if not self.queue:
-            print "ERROR, no computable bits inside max_id_rush=%d" % max_id_rush
-            print b_first.id, OP.name[b_first.op]
-            print b.id, OP.name[b.op]
+            print(
+                "ERROR, no computable bits",
+                " inside max_id_rush=%d" % max_id_rush
+            )
+            print(b_first.id, OP.name[b_first.op])
+            print(b.id, OP.name[b.op])
             quit(1)
 
         q = self.queue
-        i = randint(0, len(q)-1)
+        i = randint(0, len(q) - 1)
         b = q[i]
         assert b.id <= b_first.id + max_id_rush
         q[i], q[-1] = q[-1], q[i]

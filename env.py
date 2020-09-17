@@ -3,9 +3,9 @@
 from collections import Counter, defaultdict
 from itertools import product, combinations
 
-from cryptools.py.env import *
-
 from cryptools.sagestuff import *
+
+from cryptools.py.env import *
 
 from cryptools.sbox2 import SBox2
 from cryptools.matrix import matrix_mult_int, mat_to_tuples

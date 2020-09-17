@@ -1,5 +1,3 @@
-#-*- coding:utf-8 -*-
-
 class Bit(object):
     def __init__(self, v):
         if isinstance(v, set):
@@ -22,8 +20,10 @@ class Bit(object):
 
     def __hash__(self):
         # to make {Bit(0): 3}[0] return 3
-        if self.is_const(): return hash(self.const())
-        if self.is_var(): return hash(self.var())
+        if self.is_const():
+            return hash(self.const())
+        if self.is_var():
+            return hash(self.var())
         return hash(tuple(sorted(self.anf)))
 
     def __xor__(self, other):
@@ -64,7 +64,7 @@ class Bit(object):
             if t == ():
                 res.append("1")
             else:
-                res.append( "*".join(map(str, sorted(t))) )
+                res.append("*".join(map(str, sorted(t))))
         return " ^ ".join(sorted(res)) or "0"
 
     def __repr__(self):
@@ -72,7 +72,7 @@ class Bit(object):
 
     def degree(self, filter_func=None):
         if filter_func is None:
-            return max(len(t) for t in self.anf) if self.anf else -1 # -inf?
+            return max(len(t) for t in self.anf) if self.anf else -1  # -inf?
         else:
             res = 0
             for t in self.anf:
@@ -116,8 +116,10 @@ class Bit(object):
         return Bit(res)
 
     def is_const(self):
-        if self.anf == {()}: return True
-        if self.anf == set(): return True
+        if self.anf == {()}:
+            return True
+        if self.anf == set():
+            return True
         return False
 
     def const(self):
@@ -127,8 +129,10 @@ class Bit(object):
         return self.anf != {}
 
     def __int__(self):
-        if self.anf == {1}: return 1
-        if self.anf == set(): return 0
+        if self.anf == {1}:
+            return 1
+        if self.anf == set():
+            return 0
         raise ValueError("Not constant expression!")
 
     def is_var(self):
@@ -145,8 +149,10 @@ class Bit(object):
                     return t[0]
         raise ValueError("Not a single variable!")
 
+
 Bit.ZERO = Bit(0)
 Bit.ONE = Bit(1)
+
 
 def test_bit():
     from cryptools.py.anf.symbolic import Bit
@@ -156,9 +162,13 @@ def test_bit():
     assert str(Bit("x2")) == "x2"
     assert str(Bit("x1") & Bit("x2")) == "x1*x2"
     assert str(Bit("x1") ^ Bit("x2")) == "x1 ^ x2"
-    assert str(Bit(1) * Bit("x1") * Bit("x2") * Bit(1) + Bit(0) * Bit("x3") + Bit(1)) == "1 ^ x1*x2"
+    assert str(
+        Bit(1) * Bit("x1") * Bit("x2") * Bit(1) +
+        Bit(0) * Bit("x3") + Bit(1)
+    ) == "1 ^ x1*x2"
 
     ex = Bit("a") * Bit("b") + Bit("R") * Bit("b")
     bb = Bit(1) + Bit("Q") + Bit("c") * Bit("b")
-    assert str(ex.subs(("b", bb)) + 1) == "1 ^ Q*R ^ Q*a ^ R ^ R*b*c ^ a ^ a*b*c"
+    assert str(ex.subs([("b", bb)]) + 1) \
+        == "1 ^ Q*R ^ Q*a ^ R ^ R*b*c ^ a ^ a*b*c"
     assert {Bit(0): 123}[0] == 123

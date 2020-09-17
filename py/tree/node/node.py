@@ -1,6 +1,3 @@
-#-*- coding:utf-8 -*-
-
-
 class Node(object):
     COUNTER = 0
     OP = NotImplemented
@@ -27,12 +24,14 @@ class Node(object):
                 yield sub
 
     def __str__(self):
-        if self.op == self.OP.INPUT: return str(self.args[0])
-        if self.meta.get("fake-input"): return self.meta.get("fake-input")
+        if self.op == self.OP.INPUT:
+            return str(self.args[0])
+        if self.meta.get("fake-input"):
+            return self.meta.get("fake-input")
         sym = str(self.OP.symbol[self.op])
 
         if len(self.args) > 1:
-            return "(" +  (" " + sym + " ").join(map(str, self.args)) + ")"
+            return "(" + (" " + sym + " ").join(map(str, self.args)) + ")"
         elif len(self.args) == 1:
             return sym + str(self.args[0])
         elif len(self.args) == 0:
@@ -52,7 +51,7 @@ class Node(object):
                 else:
                     args.append("#%r" % (sub.id))
             else:
-                args.append(`sub`)
+                args.append(repr(sub))
         return "<%s#%d = %s(%s)>" % (cls, self.id, op, ",".join(map(str, args)))
 
     def __hash__(self):
@@ -72,7 +71,10 @@ class Node(object):
 
     @classmethod
     def inputs(cls, name, n, tostr=False):
-        return tuple(cls.input(name+str(i) if tostr else (name, i)) for i in xrange(n))
+        return tuple(
+            cls.input(name+str(i) if tostr else (name, i))
+            for i in range(n)
+        )
 
     def name(self):
         assert self.is_input()
@@ -97,8 +99,9 @@ class Node(object):
         return out
 
     def eval(self, acc):
-        """acc is dict {bit: value} with initial values (typically input bits)"""
+        """
+        acc is dict {bit: value} with initial values (typically input bits)
+        """
         if self not in acc:
             acc[self] = self.OP.eval(self.op, [v.eval(acc) for v in self.args])
         return acc[self]
-

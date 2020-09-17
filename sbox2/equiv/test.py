@@ -1,5 +1,3 @@
-#-*- coding:utf-8 -*-
-
 from sage.all import *
 
 from cryptools.sbox2 import SBox2
@@ -23,7 +21,7 @@ def try_good():
     assert Bt.is_linear()
     assert At.is_permutation()
     assert Bt.is_permutation()
-    print "GOOD OK"
+    # print "GOOD OK"
 
 
 def try_bad():
@@ -31,13 +29,13 @@ def try_bad():
     s2 = gen()
     res = SBox2.are_linear_equivalent(s1, s2)
     assert res is False
-    print "BAD OK"
+    # print "BAD OK"
 
 
 def main():
-    for i in xrange(100):
-        good_test()
-        bad_test()
+    for i in range(100):
+        try_good()
+        try_bad()
 
 
 if __name__ == '__main__':
