@@ -301,3 +301,15 @@ def bin2str(b):
     v = int("".join(map(str, b)), 2)
     v = ("%x" % v).zfill(len(b) / 4)
     return v.decode("hex")
+
+
+def squeeze_by_mask(x, mask):
+    res = 0
+    pos = 0
+    while mask:
+        if mask & 1:
+            res |= (x & 1) << pos
+            pos += 1
+        mask >>= 1
+        x >>= 1
+    return res

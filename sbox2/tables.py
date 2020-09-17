@@ -1,5 +1,3 @@
-#-*- coding:utf-8 -*-
-
 import os.path as Path
 import subprocess
 
@@ -9,18 +7,13 @@ import ast
 from collections import Counter
 
 from cryptools.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
-from cryptools.matrix import mat_distribution
+from cryptools.sagestuff import BooleanFunction, BooleanPolynomialRing
+
 from cryptools.py.anf import mobius
 from cryptools.binary import tobin
 
-from .base import sbox_mixin
-
-_abs = abs
-
 DDT_EXE = Path.join(Path.abspath(Path.dirname(__file__)), "ddt")
 
-
-@sbox_mixin
 class Tables(object):
     def branch_number(self):
         res = self.m + self.n
@@ -30,13 +23,6 @@ class Tables(object):
                 y2 = self[x ^ dx]
                 dy = y ^ y2
                 res = min(res, Integer(dy).popcount() + Integer(dx).popcount)
-        return res
-
-    def ddt(self, zero_zero=True):
-        res = self.difference_distribution_table()
-        if zero_zero:
-            res = copy(res)
-            res[0,0] = 0
         return res
 
     def kddt(self, k=3, zero_zero=False):
@@ -49,15 +35,6 @@ class Tables(object):
         if zero_zero:
             kddt[0,0] = 0
         return kddt
-
-    def lat(self, zero_zero=True, abs=False):
-        res = self.linear_approximation_table()
-        if zero_zero:
-            res = copy(res)
-            res[0,0] = 0
-        if abs:
-            res = res.apply_map(_abs)
-        return res
 
     def add_add_ddt(self):
         addt = matrix(ZZ, self.insize, self.outsize)
@@ -130,12 +107,6 @@ class Tables(object):
                 dy = (F.fetch_int(y2) * F.fetch_int(y)**(self.outsize - 2)).integer_representation()
                 xcddt[dx,dy] += 1
         return xcddt
-
-    def ddt_distrib(self, *a, **k):
-        return mat_distribution(self.ddt(*a, **k))
-
-    def lat_distrib(self, *a, **k):
-        return mat_distribution(self.lat(*a, **k))
 
     def minilat(self, abs=False):
         """LAT taken on a basis points"""
