@@ -61,10 +61,10 @@ class Split(object):
     """
     def __init__(self, sbox, num_in, num_out):
         self.s = sbox
-        assert sbox.m % num_in == 0
-        assert sbox.n % num_out == 0
-        self.width_in = sbox.m // num_in
-        self.width_out = sbox.n // num_out
+        assert sbox.input_size() % num_in == 0
+        assert sbox.output_size() % num_out == 0
+        self.width_in = sbox.input_size() // num_in
+        self.width_out = sbox.output_size() // num_out
         self.num_in = num_in
         self.num_out = num_out
 
@@ -81,7 +81,7 @@ class Split(object):
 
     def propagate_single_permutation(self, pos):
         outs_by_consts = [defaultdict(dict) for _ in range(self.num_out)]
-        for x, y in enumerate(self.s):
+        for x, y in self.s.graph():
             xs = split_by_width(x, self.num_in, self.width_in)
             ys = split_by_width(y, self.num_out, self.width_out)
             key = tuple(xs[i] for i in range(self.num_in) if i != pos)

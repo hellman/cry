@@ -1,7 +1,6 @@
 class GeneratorCollector(object):
     def __init__(self):
         self.gens = {}
-        self.SBox2 = self.new = None
 
     def register(self, func, name=None):
         if name is None:

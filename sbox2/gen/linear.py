@@ -7,6 +7,7 @@ from cryptools.sagestuff import randint
 from cryptools.matrix import matrix_mult_int
 from cryptools.matrix import random_invertible_matrix, random_matrix, random_bit_permutation_matrix
 
+
 @register
 def from_matrix(mat):
     m = mat.ncols()

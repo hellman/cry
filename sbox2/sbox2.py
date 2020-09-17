@@ -1,13 +1,13 @@
 from random import randint
 from collections import defaultdict, Counter
 
-from sage.crypto.sbox import SBox as Sage_SBox
-from sage.rings.polynomial.polynomial_element import is_Polynomial
-from sage.structure.element import is_Vector
-
 from cryptools.sagestuff import ZZ, Integer, lcm, matrix, GF
 from cryptools.sagestuff import BooleanFunction, BooleanPolynomialRing
 from cryptools.matrix import mat_distribution
+
+from sage.crypto.sbox import SBox as Sage_SBox
+from sage.rings.polynomial.polynomial_element import is_Polynomial
+from sage.structure.element import is_Vector
 
 from cryptools.py.binary import frombin, tobin, parity, swap_halves, hw
 from cryptools.py.binary import squeeze_by_mask
@@ -23,22 +23,30 @@ class SBox2:
         m (int): output bits
     """
     new = gen
+    gen = gen  # temporary
 
     def __init__(self, spec, m=None):
         if is_Polynomial(spec):
-            raise NotImplementedError("todo")
+            poly = spec
+            assert len(poly.variables()) == 1
+
+            fld = poly.base_ring()
+            if m is None:
+                m = ZZ(fld.order()-1).nbits()
+            spec = [poly.subs(x).integer_representation() for x in fld]
 
         self._S = tuple(map(int, spec))
-        self.n = ZZ(len(self._S)).nbits()
+        self.n = ZZ(len(self._S)-1).nbits()
         self.m = ZZ(max(self._S)).nbits()
         if m is not None:
-            self.m = int(m)
+            m = int(m)
             lim = 1 << self.m
             assert all(0 <= y < lim for y in self._S)
         else:
             m = ZZ(max(self._S)).nbits()
+        self.m = m
         assert self.input_size() >= 1
-        assert self.output_size() >= 1
+        assert self.output_size() >= 0
 
     def to_sage(self):
         return Sage_SBox(self._S)
@@ -79,6 +87,8 @@ class SBox2:
                 self.output_size() == other.output_size()
                 and self._S == other._S
             )
+        elif isinstance(other, (int, Integer)) and other == 0:
+            return max(self) > 0
         return self.tuple() == tuple(other)
 
     def __hash__(self):
@@ -95,6 +105,9 @@ class SBox2:
         x = int_tuple_list_vector(x)
         return self._S[x]
     __call__ = __getitem__
+
+    def __repr__(self):
+        return repr(self.tuple())
 
     # =================================================
     # REPRESENTATION
@@ -120,7 +133,7 @@ class SBox2:
             m.set_column(self.input_size() - 1 - e, vec)
         return m
 
-    def hex_str(self, sep=""):
+    def as_hex(self, sep=""):
         numhex = (self.output_size() + 3) // 4
         hexformat = "%0" + str(numhex) + "x"
         return sep.join(hexformat % y for y in self)
@@ -233,7 +246,7 @@ class SBox2:
     def is_affine(self):
         a = self[0]
         res = [a]
-        for i in range(self.in_bits):
+        for i in range(self.input_size()):
             delta = self[1 << i] ^ a
             for y in res[::]:
                 res.append(y ^ delta)
@@ -242,12 +255,12 @@ class SBox2:
         return True
 
     def is_balanced(self):
-        expected_size = self.input_size() - self.output_size()
-        if expected_size < 1:
+        expected = self.input_size() - self.output_size()
+        if expected < 0:
             return False
         return (
             list(self.preimage_structure().items()) ==
-            [2**expected_size, 2**self.output_size()]
+            [(2**expected, 2**self.output_size())]
         )
 
     # =================================================
@@ -346,22 +359,31 @@ class SBox2:
         return type(self)(mobius(self.tuple()), m=self.m)
 
     def anfs(self):
-        names = ["x%d" % e for e in range(self.in_bits)]
+        names = ["x%d" % e for e in range(self.input_size())]
         bpr = BooleanPolynomialRing(names=names)
         vs = list((bpr.gens()))
         res = []
-        for f in self.coordinates():
+        for f in self.mobius().coordinates():
+            print("f", f)
             anf = bpr(0)
-            for mask, take in enumerate(mobius(tuple(f))):
+            for mask, take in f.graph():
                 if not take:
                     continue
                 clause = bpr(1)
-                for b, v in zip(tobin(mask, self.in_bits), vs):
+                for b, v in zip(tobin(mask, self.input_size()), vs):
                     if b:
                         clause *= v
                 anf += clause
             res.append(anf)
         return res
+
+    def anfs_sage(self):
+        """
+        ANFs for bits (MSB to LSB)
+        /!\ warning: sage's implementation leaks a lot of memory
+        """
+        for f in self.coordinates():
+            yield f.to_sage_BF().algebraic_normal_form()
 
     def degrees(self):
         return tuple(f.degree() for f in self.anfs())
@@ -407,7 +429,7 @@ class SBox2:
             (y >> (self.output_size() - 1 - i)) & 1
             for y in self
         ]
-        yield type(self)(tt, m=1)
+        return type(self)(tt, m=1)
 
     def coordinates(self):
         for i in range(self.output_size()):
@@ -448,12 +470,17 @@ class SBox2:
     # Boolean Function only (m=1)
     # =================================================
     def to_sage_BF(self):
-        return
+        assert self.output_size() == 1
+        return BooleanFunction(self.tuple())
 
     def weight(self):
         if self.output_size() != 1:
             raise TypeError("Weight is defined only for Boolean Functions")
-        return sum(map(int, self))
+        return sum(self)
+
+
+SBox2.gen.SBox2 = SBox2
+SBox2.gen.new = SBox2
 
 
 def int_tuple_list_vector(v):
@@ -473,6 +500,51 @@ def int_tuple_list_vector(v):
 # ====================================================
 # TESTS
 # ====================================================
+def test_main():
+    from cryptools.sbox2 import SBox2
+    s = SBox2([3, 4, 7, 2, 1, 1, 6, 6], m=4)
+
+    assert s.n == s.input_size() == 3
+    assert s.m == s.output_size() == 4
+    assert len(s) == 8
+
+    assert list(s.input_range()) == list(range(8))
+    assert list(s.output_range()) == list(range(16))
+
+    assert list(s.graph()) == [
+        (0, 3), (1, 4), (2, 7), (3, 2), (4, 1), (5, 1), (6, 6), (7, 6)
+    ]
+
+    assert s.as_hex(sep=":") == "3:4:7:2:1:1:6:6"
+    assert s.as_hex(sep="") == "34721166"
+
+    ss = SBox2([3, 4, 7, 2, 1, 1, 6, 6])
+    assert s != ss
+    assert s == ss.resize(4)
+
+    ss = SBox2([3, 4, 7, 2, 1, 1, 6, 6], 4)
+    assert s == ss
+
+    ss = SBox2([2, 4, 7, 2, 1, 1, 6, 6], 4)
+    assert s != ss
+
+    assert s == [3, 4, 7, 2, 1, 1, 6, 6]
+    assert s == (3, 4, 7, 2, 1, 1, 6, 6)
+    assert s != (2, 4, 7, 2, 1, 1, 6, 6)
+
+    assert hash(s) != 0
+
+    assert s ^ 1 == s ^ 1 == s ^ Integer(1) == s ^ SBox2([1] * 8, m=4) \
+        == (2, 5, 6, 3, 0, 0, 7, 7)
+    assert s ^ s == [0] * 8
+
+    assert s[0] == s(0) == s[0, 0, 0] == 3
+    assert s[3] == s(3) == s[0, 1, 1] == 2
+    assert s[7] == s(7) == s[1, 1, 1] == 6
+    assert tuple(s)[1:3] == (4, 7)
+    assert tuple(s)[-3:] == (1, 6, 6)
+
+
 def props(s):
     fs = [
         s.is_involution,
@@ -507,7 +579,7 @@ def test_properties():
 
     s = SBox2([0] * 16)
     assert props(s) == {
-        s.is_affine, s.is_constant, s.is_linear, s.is_zero, s.is_balanced,
+        s.is_affine, s.is_constant, s.is_linear, s.is_zero, s.is_balanced
     }
 
     s = SBox2([0] * 15 + [1])
@@ -537,3 +609,41 @@ def test_transform():
     s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
     assert s.xor(0, 3) == s ^ 3
     assert s.mobius().mobius() == s
+
+
+def test_degrees():
+    from cryptools.sbox2 import SBox2
+
+    s = SBox2([0] * 15 + [1])
+    assert s.degrees() == (4,)
+    assert str(s.anfs()) == "[x0*x1*x2*x3]"
+
+    s = SBox2([1] * 8 + [0] * 8)
+    assert s.degrees() == (1,)
+    assert str(s.anfs()) == "[x0 + 1]"
+
+    s = SBox2([0] * 16)
+    assert s.degrees() == ()
+    assert str(s.anfs()) == "[]"
+
+    s = SBox2([1] * 16)
+    assert s.degrees() == (0,)
+    assert str(s.anfs()) == "[1]"
+
+
+def test_inversion():
+    from cryptools.sbox2 import SBox2
+    s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
+
+    assert ~s == s**(-1) == [6, 4, 3, 2, 7, 0, 1, 5]
+
+    s = SBox2([3, 4, 7, 2, 1, 1, 6, 6], m=4)
+    assert s.image() == {1, 2, 3, 4, 6, 7}
+    assert s.preimage(2) == 3
+    assert s.preimage(1) == 4
+    assert s.preimage(6) == 6
+    assert s.preimages(2) == (3,)
+    assert s.preimages(1) == (4, 5)
+    assert s.preimages(6) == (6, 7)
+
+    assert sorted(s.preimage_structure().items()) == [(1, 4), (2, 2)]

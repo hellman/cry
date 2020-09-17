@@ -13,6 +13,7 @@ from .gen import register, gen
 def id(n):
     return range(2**n)
 
+
 @register
 def identity(n):
     return range(2**n)
@@ -67,9 +68,9 @@ def random_function(m, n=None, homo=False):
 @register
 def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
     anfs = [list() for i in range(n)]
-    for out_bit in xrange(n):
+    for out_bit in range(n):
         mindeg = 1 if homo else 0
-        for deg in xrange(mindeg, d + 1):
+        for deg in range(mindeg, d + 1):
             for mask in hamming_masks(m, deg):
                 if randint(0, 1) == 1 or (force_all_maxterms and deg == d):
                     anfs[out_bit].append(mask)
@@ -86,10 +87,12 @@ def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
         res.append(y)
     return res
 
+
 @register
 def random_Boolean_function_of_degree(m, d):
     anf = [randint(0, 1) if hw(x) <= d else 0 for x in range(2**m)]
-    return gen.SBox2(anf, n=1).mobius()
+    return gen.SBox2(anf, m=1).mobius()
+
 
 @register
 def random_involution(n):
@@ -107,19 +110,18 @@ def random_involution(n):
     return s
 
 
-
 def hamming_masks(n, h):
     if h == 0:
         yield 0
         return
     if h == 1:
-        for e in xrange(n):
+        for e in range(n):
             yield 1 << e
         return
     if h == n:
         yield (1 << n) - 1
         return
-    for x in xrange(2**n):
+    for x in range(2**n):
         if Integer(x).popcount() == h:
             yield x
 

@@ -7,18 +7,18 @@ import ast
 from collections import Counter
 
 from cryptools.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
-from cryptools.sagestuff import BooleanFunction, BooleanPolynomialRing
 
 from cryptools.py.anf import mobius
 from cryptools.binary import tobin
 
 DDT_EXE = Path.join(Path.abspath(Path.dirname(__file__)), "ddt")
 
+
 class Tables(object):
     def branch_number(self):
         res = self.m + self.n
-        for x in xrange(self.insize):
-            for dx in xrange(1, self.insize):
+        for x in range(self.insize):
+            for dx in range(1, self.insize):
                 y = self[x]
                 y2 = self[x ^ dx]
                 dy = y ^ y2
@@ -38,8 +38,8 @@ class Tables(object):
 
     def add_add_ddt(self):
         addt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(self.insize):
-            for dx in xrange(1, self.insize):
+        for x in range(self.insize):
+            for dx in range(1, self.insize):
                 x2 = (x + dx) % self.insize
                 y = self[x]
                 y2 = self[x2]
@@ -49,8 +49,8 @@ class Tables(object):
 
     def add_xor_ddt(self):
         axddt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(self.insize):
-            for dx in xrange(1, self.insize):
+        for x in range(self.insize):
+            for dx in range(1, self.insize):
                 x2 = (x + dx) % self.insize
                 y = self[x]
                 y2 = self[x2]
@@ -60,8 +60,8 @@ class Tables(object):
 
     def xor_add_ddt(self):
         axddt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(self.insize):
-            for dx in xrange(1, self.insize):
+        for x in range(self.insize):
+            for dx in range(1, self.insize):
                 x2 = x ^ dx
                 y = self[x]
                 y2 = self[x2]
@@ -73,8 +73,8 @@ class Tables(object):
         if F is None:
             F = GF(self.insize, name='a')
         cxddt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(1, self.insize):
-            for dx in xrange(2, self.insize):
+        for x in range(1, self.insize):
+            for dx in range(2, self.insize):
                 x2 = (F.fetch_int(x) * F.fetch_int(dx)).integer_representation()
                 y = self[x]
                 y2 = self[x2]
@@ -86,8 +86,8 @@ class Tables(object):
         if F is None:
             F = GF(self.insize, name='a')
         ccddt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(1, self.insize):
-            for dx in xrange(2, self.insize):
+        for x in range(1, self.insize):
+            for dx in range(2, self.insize):
                 x2 = (F.fetch_int(x) * F.fetch_int(dx)).integer_representation()
                 y = self[x]
                 y2 = self[x2]
@@ -99,8 +99,8 @@ class Tables(object):
         if F is None:
             F = GF(self.insize, name='a')
         xcddt = matrix(ZZ, self.insize, self.outsize)
-        for x in xrange(self.insize):
-            for dx in xrange(1, self.insize):
+        for x in range(self.insize):
+            for dx in range(1, self.insize):
                 x2 = x ^ dx
                 y = self[x]
                 y2 = self[x2]
@@ -111,11 +111,11 @@ class Tables(object):
     def minilat(self, abs=False):
         """LAT taken on a basis points"""
         res = matrix(ZZ, self.m, self.n)
-        for eu in xrange(self.m):
-            for ev in xrange(self.n):
+        for eu in range(self.m):
+            for ev in range(self.n):
                 u = Integer(2**eu)
                 v = Integer(2**ev)
-                for x in xrange(2**self.m):
+                for x in range(2**self.m):
                     res[eu, ev] += (
                         (u & x).popcount() & 1 == (v & self[x]).popcount() & 1
                     )
@@ -136,7 +136,7 @@ class Tables(object):
         """
         res = matrix(GF(2), self.in_bits, self.out_bits)
         anf = mobius(tuple(self))
-        for j in xrange(self.in_bits):
+        for j in range(self.in_bits):
             mask = (1 << self.in_bits) - 1
             mask ^= 1 << (self.in_bits - 1 - j)
             res.set_column(j, tobin(anf[mask], self.out_bits))
@@ -153,11 +153,11 @@ class Tables(object):
 
     def ddt_max_estimation(self, iter=100, limit=None):
         mx = 0
-        for i in xrange(iter):
+        for i in range(iter):
             dx = randint(1, self.insize - 1)
             cnt = 0
             dys = Counter()
-            for x in xrange(self.insize):
+            for x in range(self.insize):
                 dy = self[x] ^ self[x^dx]
                 dys[dy] += 1
                 if limit is not None and dys[dy] > limit:

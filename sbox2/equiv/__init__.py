@@ -1,7 +1,3 @@
-#-*- coding:utf-8 -*-
-
-from ..base import sbox_mixin
-
 from itertools import product
 
 from sage.crypto.boolean_function import BooleanFunction
@@ -13,7 +9,6 @@ from .linear import LEContext
 from .linear_generic import LEContext as LEContextGeneric
 
 
-@sbox_mixin
 class Equiv(object):
     @staticmethod
     def are_XOR_equivalent(s1, s2):
