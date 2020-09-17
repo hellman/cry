@@ -8,12 +8,12 @@ from .base import sbox_mixin
 @sbox_mixin
 class Properties(object):
     def is_involution(self):
-        return all(self[self[x]] == x for x in xrange(self.insize))
+        return all(self[self[x]] == x for x in range(self.insize))
 
     def is_permutation(self):
         if self.n != self.m:
             return False
-        return sorted(self[x] for x in xrange(self.insize)) == range(self.insize)
+        return sorted(self[x] for x in range(self.insize)) == list(range(self.insize))
 
     def is_zero(self):
         return max(self) == 0
@@ -30,7 +30,7 @@ class Properties(object):
     def is_affine(self):
         a = self[0]
         res = [a]
-        for i in xrange(self.in_bits):
+        for i in range(self.in_bits):
             delta = self[1 << i] ^ a
             res.extend([y ^ delta for y in res])
         return self == res

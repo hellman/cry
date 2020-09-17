@@ -15,13 +15,13 @@ class Degrees(object):
         /!\ warning: sage's implementation leaks a lot of memory
         """
         res = []
-        for i in xrange(self.out_bits):
+        for i in range(self.out_bits):
             f = BooleanFunction([(y >> i) & 1 for y in self])
             res.append( f.algebraic_normal_form() )
         return tuple(reversed(res))
 
     def anfs(self):
-        names = ["x%d" % e for e in xrange(self.in_bits)]
+        names = ["x%d" % e for e in range(self.in_bits)]
         bpr = BooleanPolynomialRing(names=names)
         vs = list((bpr.gens()))
         res = []
@@ -45,7 +45,7 @@ class Degrees(object):
         return max(self.degrees())
 
     def coordinates(self):
-        for e in xrange(self.out_bits):
+        for e in range(self.out_bits):
             tt = [(y >> (self.out_bits - 1 - e)) & 1 for x, y in self.graph()]
             yield BooleanFunction(tt)
 
@@ -54,7 +54,7 @@ class Degrees(object):
             anfs = self.anfs()
         for mask in range(1, 2**(self.n)):
             mask = Integer(mask)
-            tt = [(self[x] & mask).popcount() & 1 for x in xrange(self.insize)]
+            tt = [(self[x] & mask).popcount() & 1 for x in range(self.insize)]
             res = BooleanFunction(tt)
             if with_masks or with_anfs:
                 res = [res]
@@ -73,7 +73,7 @@ def mobius(bf):
     if len(bf) == 1:
         return (bf[0],)
     assert len(bf) & 1 == 0
-    h = len(bf) / 2
+    h = len(bf) // 2
     sub0 = mobius(bf[:h])
     sub1 = mobius(bf[h:])
     return sub0 + tuple(a ^ b for a, b in zip(sub0, sub1))

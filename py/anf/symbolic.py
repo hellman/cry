@@ -31,6 +31,8 @@ class Bit(object):
             other = Bit(other)
         return Bit(self.anf ^ other.anf)
     __add__ = __xor__
+    __rxor__ = __xor__
+    __radd__ = __add__
 
     def __and__(self, other):
         # heavy!
@@ -40,6 +42,8 @@ class Bit(object):
                 res ^= {self._merge_products(t1, t2)}
         return Bit(res)
     __mul__ = __and__
+    __rand__ = __and__
+    __rmul__ = __mul__
 
     def __invert__(self):
         return self ^ Bit.ONE
@@ -86,7 +90,15 @@ class Bit(object):
     def varcount(self, filter_func=None):
         return len(self.variables(filter_func=filter_func))
 
-    def subs(self, var, bit):
+    def subs(self, lst):
+        if len(lst) == 0:
+            return self
+        if len(lst) > 1:
+            res = self.subs([lst[0]])
+            return res.subs(lst[1:])
+
+        var, bit = lst[0]
+        # print("subs", var, bit)
         if isinstance(var, Bit):
             var = var.var()
         if isinstance(bit, int):
@@ -148,5 +160,5 @@ def test_bit():
 
     ex = Bit("a") * Bit("b") + Bit("R") * Bit("b")
     bb = Bit(1) + Bit("Q") + Bit("c") * Bit("b")
-    assert str(ex.subs("b", bb) + 1) == "1 ^ Q*R ^ Q*a ^ R ^ R*b*c ^ a ^ a*b*c"
+    assert str(ex.subs(("b", bb)) + 1) == "1 ^ Q*R ^ Q*a ^ R ^ R*b*c ^ a ^ a*b*c"
     assert {Bit(0): 123}[0] == 123

@@ -26,9 +26,9 @@ class Equiv(object):
         assert_equal_sizes(s1, s2)
         n, m = s1.m, s1.n
 
-        for cx in xrange(2**m):
+        for cx in range(2**m):
             cy = s1[0] ^ s2[0 ^ cx]
-            for x in xrange(1, 2**m):
+            for x in range(1, 2**m):
                 if s1[x] ^ s2[x ^ cx] != cy:
                     break
             else:
@@ -93,10 +93,8 @@ class Equiv(object):
 
         # temporary unoptimal algorithm
         for a, b in product(range(s1.insize), range(s1.outsize)):
-            xor_s1 = Equiv.new(s1[x ^ a] ^ b for x in xrange(s1.insize))
+            xor_s1 = Equiv.new(s1[x ^ a] ^ b for x in range(s1.insize))
             lin_res = xor_s1.is_linear_equivalent(s2, findall=findall)
-            # if lin_res != False:
-            #     print a, b, len(lin_res)
             if findall and lin_res:
                 for A, B in lin_res:
                     assert A.is_permutation()
@@ -107,11 +105,11 @@ class Equiv(object):
                     xb = B[b]
                     assert (B * s1 * A).xor(xa, xb) == s2
                 if counts_only:
-                    full_res.setdefault((xa, xb), 0)
-                    full_res[xa, xb] += len(lin_res)
+                    full_res.setdefault((a, b), 0)
+                    full_res[a, b] += len(lin_res)
                 else:
-                    full_res.setdefault((xa, xb), [])
-                    full_res[xa, xb] += lin_res
+                    full_res.setdefault((a, b), [])
+                    full_res[a, b] += lin_res
             elif lin_res:
                 A, B = lin_res
                 assert A.is_permutation()
@@ -141,7 +139,7 @@ class Equiv(object):
         inp, out = s1.m, s1.n
         M1 = Matrix(GF(2), 1 + inp + out, 2**inp)
         M2 = Matrix(GF(2), 1 + inp + out, 2**inp)
-        for x in xrange(2**inp):
+        for x in range(2**inp):
             M1.set_column(x, tobin(1,1) + tobin(x, inp) + tobin(s1[x], out))
             M2.set_column(x, tobin(1,1) + tobin(x, inp) + tobin(s2[x], out))
 

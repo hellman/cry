@@ -313,9 +313,9 @@ def split(x, sizes=None, size=None, parts=None):
 
 
 def test_binary():
-    assert hamming(0) == hamming(0L) == 0
-    assert hamming(1) == hamming(1L) == 1
-    assert hamming(2) == hamming(2L) == 1
+    assert hamming(0) == hamming(0) == 0
+    assert hamming(1) == hamming(1) == 1
+    assert hamming(2) == hamming(2) == 1
     v = 1889421344686260973171433197677248273467675043680169246693717736553773868585782209193108237
     assert hamming(int(v)) == hamming(long(v)) == 159
 
@@ -326,3 +326,12 @@ def test_binary():
     assert concat(1, 2, 3, size=4) == 0x123
     assert swap_halves(0xab, 4) == 0xba
     assert split_halves(0xab, 4) == (0xa, 0xb)
+
+def str2bin(s):
+    return map(int, "".join(bin(ord(c))[2:].zfill(8) for c in s))
+
+def bin2str(b):
+    assert len(b) % 8 == 0
+    v = int("".join(map(str, b)), 2)
+    v = ("%x" % v).zfill(len(b) / 4)
+    return v.decode("hex")

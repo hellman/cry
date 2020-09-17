@@ -53,7 +53,7 @@ class Node(object):
                     args.append("#%r" % (sub.id))
             else:
                 args.append(`sub`)
-        return "<%s#%d = %s(%s)>" % (cls, self.id, op, ",".join(args))
+        return "<%s#%d = %s(%s)>" % (cls, self.id, op, ",".join(map(str, args)))
 
     def __hash__(self):
         return hash(id(self))
@@ -71,7 +71,7 @@ class Node(object):
         return cls(cls.OP.INPUT, name)
 
     @classmethod
-    def inputs(cls, name, n, tostr=True):
+    def inputs(cls, name, n, tostr=False):
         return tuple(cls.input(name+str(i) if tostr else (name, i)) for i in xrange(n))
 
     def name(self):

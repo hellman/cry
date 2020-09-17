@@ -10,7 +10,7 @@ from .gen import register
 @register
 def from_poly(p, varname="x"):
     fld = p.base_ring()
-    return [p.subs(**{varname: fld.fetch_int(i)}).integer_representation() for i in xrange(fld.order())]
+    return [p.subs(**{varname: fld.fetch_int(i)}).integer_representation() for i in range(fld.order())]
 
 @register
 def exponent(n, e, fld=None):

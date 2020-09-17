@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-from Queue import Queue
+# from Queue import Queue
 
 class LEContext(object):
     def __init__(self, s1, s2, findall=False):

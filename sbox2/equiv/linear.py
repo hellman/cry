@@ -1,6 +1,10 @@
 #-*- coding:utf-8 -*-
 
-from Queue import Queue
+try:
+    from Queue import Queue
+except:
+    from queue import Queue
+
 
 class LEContext(object):
     def __init__(self, s1, s2, findall=False):
@@ -45,16 +49,16 @@ class LEState(object):
         self.ctx = ctx
 
         self.linear_maps = linear_maps or [{0: 0}, {0: 0}]
-        self.unknown_inputs = unknown_inputs or [set(self.ctx.input_range(no_zero=True)) for i in xrange(2)]
-        self.unknown_outputs = unknown_outputs or [set(self.ctx.input_range(no_zero=True)) for i in xrange(2)]
+        self.unknown_inputs = unknown_inputs or [set(self.ctx.input_range(no_zero=True)) for i in range(2)]
+        self.unknown_outputs = unknown_outputs or [set(self.ctx.input_range(no_zero=True)) for i in range(2)]
 
         self.queue = Queue()
         self.depth = 0
 
     def copy(self):
-        lm2 = [self.linear_maps[i].copy() for i in xrange(2)]
-        ui2 = [self.unknown_inputs[i].copy() for i in xrange(2)]
-        uo2 = [self.unknown_outputs[i].copy() for i in xrange(2)]
+        lm2 = [self.linear_maps[i].copy() for i in range(2)]
+        ui2 = [self.unknown_inputs[i].copy() for i in range(2)]
+        uo2 = [self.unknown_outputs[i].copy() for i in range(2)]
         st = LEState(self.ctx, lm2, ui2, uo2)
         st.depth = self.depth + 1
         return st
@@ -82,7 +86,7 @@ class LEState(object):
 
     def expand_horizontal(self, side, inp, out):
         if len(self.linear_maps[side]) < len(self.ctx.s1) / 2:
-            for old_inp, old_out in self.linear_maps[side].items():
+            for old_inp, old_out in list(self.linear_maps[side].items()):
                 new_inp = inp ^ old_inp
                 new_out = out ^ old_out
                 yield new_inp, new_out

@@ -19,10 +19,10 @@ class Main(object):
         self.out_bits = self.n
 
     def in_range(self):
-        return xrange(1 << self.in_bits)
+        return range(1 << self.in_bits)
 
     def out_range(self):
-        return xrange(1 << self.out_bits)
+        return range(1 << self.out_bits)
 
     def graph(self):
         return enumerate(self)
@@ -42,6 +42,9 @@ class Main(object):
     @property
     def outsize(self):
         return (1 << self.n)
+
+    def weight(self):
+        return sum(map(int, self))
 
     def as_hex_str(self, format="", sep=""):
         numhex = (self.n + 3)/ 4
@@ -66,14 +69,14 @@ class Main(object):
         if isinstance(index, int) or isinstance(index, Integer):
             return self.get(index)
         if isinstance(index, slice):
-            return self.new( [self.get(index) for index in xrange(*index.indices(self.insize))], n=self.n )
+            return self.new( [self.get(index) for index in range(*index.indices(self.insize))], n=self.n )
         if isinstance(index, tuple) or isinstance(index, list):
             # binary vector (msb to lsb)
             # not sure if confusing, maybe remove this API
             assert len(index) == self.m
             assert 0 <= min(index) <= max(index) <= 1
             return self.get(frombin(index))
-        raise ValueError("evaluate at what?", type(index), `index`)
+        raise ValueError("evaluate at what?", type(index), repr(index))
 
 
 def test_main():
@@ -98,18 +101,18 @@ def test_main():
     assert s.resize(2) == (3, 0, 3, 2, 1, 1, 2, 2)
     ss = SBox2([3, 4, 7, 2, 1, 1, 6, 6], 4)
     assert s == ss
-    ss = SBox2([3L, 4, 7, 2, 1, 1, 6, 6], 4)
+    ss = SBox2([3, 4, 7, 2, 1, 1, 6, 6], 4)
     assert s == ss
     ss = SBox2([2, 4, 7, 2, 1, 1, 6, 6], 4)
     assert s != ss
     assert s == [3, 4, 7, 2, 1, 1, 6, 6]
     assert s == (3, 4, 7, 2, 1, 1, 6, 6)
-    assert s == (3L, 4, 7, 2, 1, 1, 6, 6)
+    assert s == (3, 4, 7, 2, 1, 1, 6, 6)
     assert s != (2, 4, 7, 2, 1, 1, 6, 6)
 
     assert hash(s) != 0
 
-    assert s ^ 1 == s ^ 1L == s ^ Integer(1) == s ^ SBox2([1]*8, n=4) == (2, 5, 6, 3, 0, 0, 7, 7)
+    assert s ^ 1 == s ^ 1 == s ^ Integer(1) == s ^ SBox2([1]*8, n=4) == (2, 5, 6, 3, 0, 0, 7, 7)
     assert s ^ s == [0] * 8
 
     assert s.get(0) == s[0] == s(0) == s[0,0,0] == 3

@@ -8,7 +8,7 @@ class Cycles(object):
     def cycles(self):
         assert self.is_permutation()
 
-        xs = set(xrange(len(self)))
+        xs = set(range(len(self)))
         _cycles = []
         cycle = []
         while xs:

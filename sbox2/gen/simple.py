@@ -21,8 +21,8 @@ def identity(n):
 @register
 def swap(n):
     res = []
-    for al in xrange(2**n):
-        for ar in xrange(2**n):
+    for al in range(2**n):
+        for ar in range(2**n):
             l, r = ar, al
             res.append((l << n) | r)
     return res
@@ -45,12 +45,12 @@ def parallel(funcs, width=None):
 @register
 def concat_output(funcs):
     sizes = tuple(f.out_bits for f in funcs)
-    return [concat(*ys, sizes=sizes) for ys in zip(funcs)]
+    return [concat(*ys, sizes=sizes) for ys in zip(*funcs)]
 
 
 @register
 def random_permutation(n, homo=False):
-    res = range(1 if homo else 0, 2**n)
+    res = list(range(1 if homo else 0, 2**n))
     shuffle(res)
     return ([0] if homo else []) + res
 
@@ -58,7 +58,7 @@ def random_permutation(n, homo=False):
 @register
 def random_function(m, n=None, homo=False):
     n = n or m
-    res = [randint(0, 2**n-1) for i in xrange(2**m)]
+    res = [randint(0, 2**n-1) for i in range(2**m)]
     if homo:
         res[0] = 0
     return res
@@ -66,7 +66,7 @@ def random_function(m, n=None, homo=False):
 
 @register
 def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
-    anfs = [list() for i in xrange(n)]
+    anfs = [list() for i in range(n)]
     for out_bit in xrange(n):
         mindeg = 1 if homo else 0
         for deg in xrange(mindeg, d + 1):
@@ -74,7 +74,7 @@ def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
                 if randint(0, 1) == 1 or (force_all_maxterms and deg == d):
                     anfs[out_bit].append(mask)
     res = []
-    for x in xrange(2**m):
+    for x in range(2**m):
         y = 0
         for e, anf in enumerate(anfs):
             e = n - 1 - e
@@ -88,12 +88,12 @@ def random_sbox_of_degree(m, n, d, homo=False, force_all_maxterms=False):
 
 @register
 def random_Boolean_function_of_degree(m, d):
-    anf = [randint(0, 1) if hw(x) <= d else 0 for x in xrange(2**m)]
+    anf = [randint(0, 1) if hw(x) <= d else 0 for x in range(2**m)]
     return gen.SBox2(anf, n=1).mobius()
 
 @register
 def random_involution(n):
-    print 'WARNING: too low number of fixed points! not a uniform distribution'
+    print('WARNING: too low number of fixed points! not a uniform distribution')
     pairs = range(2**n)
     shuffle(pairs)
     s = [0] * 2**n
@@ -127,7 +127,7 @@ def hamming_masks(n, h):
 @register
 def random_minicipher(n):
     res = []
-    for k in xrange(2**n):
+    for k in range(2**n):
         p = range(2**n)
         shuffle(p)
         res.append(tuple(p))

@@ -31,3 +31,7 @@ class BitNode(Node):
     @classmethod
     def const(cls, v):
         return cls.new(cls.OP.ONE) if int(v) else cls.new(cls.OP.ZERO)
+
+    @classmethod
+    def consts(cls, vs):
+        return [cls.const(v) for v in vs]

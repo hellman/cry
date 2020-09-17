@@ -11,7 +11,7 @@ from cryptools.matrix import random_invertible_matrix, random_matrix, random_bit
 def from_matrix(mat):
     m = mat.ncols()
     res = []
-    for x in xrange(2**m):
+    for x in range(2**m):
         res.append(matrix_mult_int(mat, x))
     return res
 

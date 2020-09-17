@@ -44,6 +44,8 @@ class Transform(object):
         return self.new(squeeze_by_mask(y, mask) for x, y in self.graph())
 
     def xor(self, inp=0, out=0):
+        assert 0 <= inp < self.insize
+        assert 0 <= out < self.outsize
         return self.new([self[x ^ inp] ^ out for x in self.in_range()], n=self.n)
 
     def __xor__(self, other):
