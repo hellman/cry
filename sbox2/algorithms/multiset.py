@@ -5,7 +5,7 @@ Some simple checks for multiset properties in S-Boxes.
 EXAMPLES::
 
     >>> from cryptools.sbox2 import SBox2
-    >>> from cryptools.binary import concat, split
+    >>> from cryptools.binary import concat, split, ranges
     >>> from itertools import product
     >>> from pprint import pprint
 
@@ -34,7 +34,7 @@ Example with balanced and unknown:
     >>> f = SBox2.new.random_function(6, 3)
     >>> s = SBox2(
     ...       concat(x, x^y, f((x << 3) | y), size=3)
-    ...       for x, y in product(range(2**3), repeat=2) )
+    ...       for x, y in ranges(8, 8) )
     >>> s = SBox2.new.parallel([a, b, c])
     >>> split = Split(s, 3, 3)
 

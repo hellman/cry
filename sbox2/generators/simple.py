@@ -1,13 +1,12 @@
-from itertools import product
 from random import randint, random, shuffle
 
 from cryptools.sagestuff import (
     Integer, GF, PolynomialRing
 )
-from cryptools.binary import concat as concat_ints
+from cryptools.binary import concat as concat_ints, ranges
 from cryptools.sbox2 import SBox2
 
-register = SBox2.registry.register
+register = SBox2.new.register
 
 
 @register
@@ -25,24 +24,23 @@ def const(c, n):
 
 @register
 def swap(h):
-    res = []
-    for l in range(2**h):
-        for r in range(2**h):
-            res.append((r << h) | l)
-    return SBox2(res)
+    s = []
+    for l, r in ranges(2**h, 2**h):
+        s.append((r << h) | l)
+    return SBox2(s)
 
 
 @register
 def parallel(funcs):
-    input_size = [f.input_size() for f in funcs]
-    output_size = [f.output_size() for f in funcs]
-    res = []
-    for xs in product(*[range(2**w) for w in input_size]):
+    input_sizes = [f.input_size() for f in funcs]
+    output_sizes = [f.output_size() for f in funcs]
+    s = []
+    for xs in ranges(list=[2**w for w in input_sizes]):
         fully = 0
-        for f, x, w in zip(funcs, xs, output_size):
+        for f, x, w in zip(funcs, xs, output_sizes):
             fully = (fully << w) | f(x)
-        res.append(fully)
-    return SBox2(res, m=output_size)
+        s.append(fully)
+    return SBox2(s, m=sum(output_sizes))
 
 
 @register
@@ -57,21 +55,21 @@ def concat(funcs):
 
 @register
 def random_permutation(n, zero_zero=False):
-    res = list(range(2**n))
-    shuffle(res)
+    s = list(range(2**n))
+    shuffle(s)
     if zero_zero:
-        i = res.index(0)
-        res[0], res[i] = res[i], res[0]
-    return SBox2(res)
+        i = s.index(0)
+        s[0], s[i] = s[i], s[0]
+    return SBox2(s)
 
 
 @register
 def random_function(n, m=None, zero_zero=False):
     m = m or n
-    res = [randint(0, 2**n-1) for i in range(2**m)]
+    s = [randint(0, 2**m-1) for i in range(2**n)]
     if zero_zero:
-        res[0] = 0
-    return res
+        s[0] = 0
+    return SBox2(s, m=m)
 
 
 @register
@@ -153,8 +151,8 @@ def random_minicipher(n, kn=None):
 
 
 @register
-def power(e, n=None, fld=None):
-    assert (n is not None) ^ (fld is not None)
-    fld = fld or GF(2**n, name='a')
-    x = PolynomialRing(fld, names='x').gen()
+def power(e, n=None, field=None):
+    assert (n is not None) ^ (field is not None)
+    field = field or GF(2**n, name='a')
+    x = PolynomialRing(field, names='x').gen()
     return SBox2(x**e)

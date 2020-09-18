@@ -1,8 +1,11 @@
 from random import randint
 from collections import defaultdict, Counter
 
-from cryptools.sagestuff import ZZ, Integer, lcm, matrix, GF
-from cryptools.sagestuff import BooleanFunction, BooleanPolynomialRing
+from cryptools.sagestuff import (
+    ZZ, Integer, lcm, matrix, GF,
+    PolynomialRing,
+    BooleanFunction, BooleanPolynomialRing,
+)
 from cryptools.matrix import mat_distribution
 
 from sage.crypto.sbox import SBox as Sage_SBox
@@ -20,8 +23,10 @@ class SBox2:
         n (int): input bits
         m (int): output bits
     """
-    REGISTRY_ATTRIBUTE = "new"
+    GENERATORS_ATTRIBUTE = "new"
+    ALGORITHMS_ATTRIBUTE = "alg"
     new = None  # will be set outside
+    alg = None
 
     def __init__(self, spec, m=None):
         if is_Polynomial(spec):
@@ -106,6 +111,12 @@ class SBox2:
 
     def __repr__(self):
         return repr(self.tuple())
+
+    @classmethod
+    def get_x(cls, n=None, field=None):
+        assert (n is not None) ^ (field is not None)
+        field = field or GF(2**n, name='a')
+        return PolynomialRing(field, names='x').gen()
 
     # =================================================
     # REPRESENTATION

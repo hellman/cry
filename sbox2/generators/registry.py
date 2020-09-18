@@ -7,5 +7,5 @@ class GeneratorRegistry(object):
 
 
 def initialize_registry():
-    if getattr(SBox2, SBox2.REGISTRY_ATTRIBUTE, None) is None:
-        setattr(SBox2, SBox2.REGISTRY_ATTRIBUTE, GeneratorRegistry())
+    if getattr(SBox2, SBox2.GENERATORS_ATTRIBUTE, None) is None:
+        setattr(SBox2, SBox2.GENERATORS_ATTRIBUTE, GeneratorRegistry())

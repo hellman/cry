@@ -11,7 +11,7 @@ from cryptools.matrix import (
 
 from cryptools.sbox2 import SBox2
 
-register = SBox2.registry.register
+register = SBox2.new.register
 
 
 @register

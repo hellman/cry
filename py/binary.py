@@ -2,6 +2,13 @@ from functools import partial, reduce
 from itertools import product
 
 
+def ranges(*ns, list=None):
+    if list:
+        assert not ns
+        ns = list
+    return product(*[range(n) for n in ns])
+
+
 def rol(x, n, bits):
     """
         >>> hex( rol(0x1234, 4, 16) )
