@@ -11,8 +11,8 @@ EXAMPLES::
 
 Simple example:
 
-    >>> a, b, c = (SBox2.gen.random_permutation(4) for _ in range(3))
-    >>> s = SBox2.gen.parallel([a, b, c])
+    >>> a, b, c = (SBox2.new.random_permutation(4) for _ in range(3))
+    >>> s = SBox2.new.parallel([a, b, c])
     >>> split = Split(s, 3, 3)
 
 Manual specification of input permutation position:
@@ -31,11 +31,11 @@ Automatic check of all positions:
 
 Example with balanced and unknown:
 
-    >>> f = SBox2.gen.random_function(6, 3)
+    >>> f = SBox2.new.random_function(6, 3)
     >>> s = SBox2(
     ...       concat(x, x^y, f((x << 3) | y), size=3)
     ...       for x, y in product(range(2**3), repeat=2) )
-    >>> s = SBox2.gen.parallel([a, b, c])
+    >>> s = SBox2.new.parallel([a, b, c])
     >>> split = Split(s, 3, 3)
 
     >>> pprint( split.check_single_permutation() )

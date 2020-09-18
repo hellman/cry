@@ -2,7 +2,11 @@ from collections import Counter
 
 from copy import copy
 
-from cryptools.sagestuff import vector, matrix, random_matrix as sage_random_matrix, GF
+from random import shuffle
+from cryptools.sagestuff import (
+    vector, matrix, identity_matrix, random_matrix,
+    GF, LinearCode, Permutation
+)
 from cryptools.binary import tobin, frombin
 
 
@@ -19,6 +23,7 @@ def matrix_mult_int(mat, x):
     x = vector(GF(2), tobin(x, n))
     y = mat * x
     return frombin(y)
+
 
 def matrix_mult_int_rev(mat, x):
     """
@@ -41,8 +46,8 @@ def matrix_is_mds(mat):
     m = mat.nrows()
 
     mat2 = matrix(mat.base_ring(), m * 2, n)
-    mat2[:m,:n] = identity_matrix(mat.base_ring(), m, n)
-    mat2[m:,:n] = mat
+    mat2[:m, :n] = identity_matrix(mat.base_ring(), m, n)
+    mat2[m:, :n] = mat
 
     # linear code: x -> (x || M*x)
     C = LinearCode(mat2.transpose())
@@ -96,28 +101,24 @@ def mat_distribution(mat):
 
 def mat_zero_zero(mat):
     mat = copy(mat)
-    for y in xrange(mat.nrows()):
+    for y in range(mat.nrows()):
         mat[y, 0] = 0
-    for x in xrange(mat.ncols()):
+    for x in range(mat.ncols()):
         mat[0, x] = 0
     return mat
 
 
-def random_matrix(*args):
-    return sage_random_matrix(GF(2), *args)
-
-
-def random_invertible_matrix(n):
+def random_invertible_matrix(field, n):
     """Hack because GL(GF(2), n).random_element()
     uses weird own random generator state
     """
     while 1:
-        m = random_matrix(n)
+        m = random_matrix(field, n)
         if not m.is_singular():
             return m
 
 
-def random_bit_permutation_matrix(n):
-    r = range(1, n + 1)
-    shuffle(r)
-    return Permutation(r).to_matrix()
+def random_permutation_matrix(field, n):
+    rows = list(identity_matrix(n))
+    shuffle(rows)
+    return matrix(field, rows)

@@ -6,13 +6,13 @@ N = 6
 
 
 def gen():
-    return SBox2.gen.random_permutation(N)
-    # return SBox2.gen.random_function(N)
+    return SBox2.new.random_permutation(N)
+    # return SBox2.new.random_function(N)
 
 
 def try_good():
-    A = SBox2.gen.random_linear_permutation(N)
-    B = SBox2.gen.random_linear_permutation(N)
+    A = SBox2.new.random_linear_permutation(N)
+    B = SBox2.new.random_linear_permutation(N)
     s1 = gen()
     s2 = B * s1 * A
     At, Bt = SBox2.are_linear_equivalent(s1, s2)

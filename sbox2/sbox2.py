@@ -13,8 +13,6 @@ from cryptools.py.binary import frombin, tobin, parity, swap_halves, hw
 from cryptools.py.binary import squeeze_by_mask
 from cryptools.py.anf import mobius
 
-from .gen import gen
-
 
 class SBox2:
     """
@@ -22,8 +20,8 @@ class SBox2:
         n (int): input bits
         m (int): output bits
     """
-    new = gen
-    gen = gen  # temporary
+    REGISTRY_ATTRIBUTE = "new"
+    new = None  # will be set outside
 
     def __init__(self, spec, m=None):
         if is_Polynomial(spec):
@@ -477,10 +475,6 @@ class SBox2:
         if self.output_size() != 1:
             raise TypeError("Weight is defined only for Boolean Functions")
         return sum(self)
-
-
-SBox2.gen.SBox2 = SBox2
-SBox2.gen.new = SBox2
 
 
 def int_tuple_list_vector(v):
