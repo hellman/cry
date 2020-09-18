@@ -3,8 +3,10 @@ from random import randint, random, shuffle
 from cryptools.sagestuff import (
     Integer, GF, PolynomialRing
 )
-from cryptools.binary import concat as concat_ints, ranges
+from cryptools.utils import ranges
 from cryptools.sbox2 import SBox2
+
+from bint import Bin
 
 register = SBox2.new.register
 
@@ -48,7 +50,7 @@ def concat(funcs):
     assert len(set(f.input_size() for f in funcs)) == 1
     sizes = tuple(f.output_size() for f in funcs)
     return SBox2(
-        [concat_ints(*ys, sizes=sizes) for ys in zip(*funcs)],
+        [Bin.concat(*Bin.array(ys, ns=sizes)) for ys in zip(*funcs)],
         m=sum(sizes)
     )
 

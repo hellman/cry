@@ -1,6 +1,8 @@
 from random import randint
 from collections import defaultdict, Counter
 
+from bint import Bin
+
 from cryptools.sagestuff import (
     ZZ, Integer, lcm, matrix, GF,
     PolynomialRing,
@@ -12,8 +14,6 @@ from sage.crypto.sbox import SBox as Sage_SBox
 from sage.rings.polynomial.polynomial_element import is_Polynomial
 from sage.structure.element import is_Vector
 
-from cryptools.py.binary import frombin, tobin, parity, swap_halves, hw
-from cryptools.py.binary import squeeze_by_mask
 from cryptools.py.anf import mobius
 
 
@@ -138,7 +138,7 @@ class SBox2:
 
         m = matrix(GF(2), self.output_size(), self.input_size())
         for e in range(self.input_size()):
-            vec = tobin(self[2**e], self.output_size())
+            vec = Bin(self[2**e], self.output_size()).tuple
             m.set_column(self.input_size() - 1 - e, vec)
         return m
 
@@ -338,15 +338,11 @@ class SBox2:
 
     def swap_halves(self, input=True, output=True):
         if input:
-            assert self.input_size() & 1 == 0
-            hx = self.input_size() // 2
-            fx = lambda x: swap_halves(x, hx)
+            fx = lambda x: Bin(x, self.input_size()).swap_halves().int
         else:
             fx = lambda x: x
         if output:
-            assert self.output_size() & 1 == 0
-            hy = self.output_size() // 2
-            fy = lambda y: swap_halves(y, hy)
+            fy = lambda y: Bin(y, self.output_size()).swap_halves().int
         else:
             fy = lambda y: y
         return self.transform_graph(
@@ -356,9 +352,10 @@ class SBox2:
     def squeeze_by_mask(self, mask):
         mask = int_tuple_list_vector(mask)
         assert mask in self.output_range()
+        m = self.output_size()
         return type(self)(
-            [squeeze_by_mask(y, mask) for y in self],
-            m=hw(mask)
+            [Bin(y, m).squeeze_by_mask(mask).int for y in self],
+            m=Bin(mask).hw
         )
 
     # =================================================
@@ -379,7 +376,7 @@ class SBox2:
                 if not take:
                     continue
                 clause = bpr(1)
-                for b, v in zip(tobin(mask, self.input_size()), vs):
+                for b, v in zip(Bin(mask, self.input_size()).tuple, vs):
                     if b:
                         clause *= v
                 anf += clause
@@ -447,7 +444,7 @@ class SBox2:
     def component(self, mask):
         mask = int_tuple_list_vector(mask)
         tt = [
-            parity(y & mask)
+            Bin(y & mask).parity()
             for y in self
         ]
         yield type(self)(tt, m=1)
@@ -494,11 +491,11 @@ def int_tuple_list_vector(v):
     if isinstance(v, Integer):
         return int(v)
     if isinstance(v, tuple):
-        return frombin(v)
+        return Bin(v).int
     if isinstance(v, list):
-        return frombin(v)
+        return Bin(v).int
     if is_Vector(v):
-        return frombin(tuple(v))
+        return Bin(tuple(v)).int
     raise TypeError("%r is not tuple, list, vector or integer")
 
 

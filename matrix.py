@@ -5,9 +5,10 @@ from copy import copy
 from random import shuffle
 from cryptools.sagestuff import (
     vector, matrix, identity_matrix, random_matrix,
-    GF, LinearCode, Permutation
+    GF, LinearCode
 )
-from cryptools.binary import tobin, frombin
+
+from bint import Bin
 
 
 def matrix_mult_int(mat, x):
@@ -20,9 +21,9 @@ def matrix_mult_int(mat, x):
     """
     assert mat.base_ring() == GF(2)
     n = mat.ncols()
-    x = vector(GF(2), tobin(x, n))
+    x = vector(GF(2), Bin(x, n).tuple)
     y = mat * x
-    return frombin(y)
+    return Bin(y).int
 
 
 def matrix_mult_int_rev(mat, x):
@@ -35,9 +36,9 @@ def matrix_mult_int_rev(mat, x):
     """
     assert mat.base_ring() == GF(2)
     n = mat.ncols()
-    x = vector(GF(2), tobin(x, n)[::-1])
+    x = vector(GF(2), Bin(x, n).tuple[::-1])
     y = mat * x
-    return frombin(y[::-1])
+    return Bin(y[::-1]).int
 
 
 def matrix_is_mds(mat):
@@ -65,8 +66,7 @@ def mat_from_linear_func(m, n, func):
     mat = matrix(GF(2), n, m)
     for i, e in enumerate(reversed(range(m))):
         x = 1 << e
-        res = tobin(func(x), n)
-        mat.set_column(i, res)
+        mat.set_column(i, Bin(func(x), n).tuple)
     return mat
 
 
@@ -77,8 +77,8 @@ def mat_field_mul_const(field, c):
     for i, e in enumerate(reversed(range(d))):
         x = 1 << e
         res = field.fetch_int(x) * field.fetch_int(c)
-        res = tobin(res.integer_representation(), d)
-        m.set_column(i, res)
+        res = res.integer_representation()
+        m.set_column(i, Bin(res, d).tuple)
     return m
 
 

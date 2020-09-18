@@ -1,9 +1,9 @@
 from itertools import product
 
-from sage.crypto.boolean_function import BooleanFunction
-from sage.all import BooleanPolynomialRing, Integer, Matrix, GF, LinearCode, randint
+from bint import Bin
 
-from cryptools.binary import tobin
+from sage.crypto.boolean_function import BooleanFunction
+from sage.all import BooleanPolynomialRing, Integer, Matrix, GF, LinearCode
 
 from .linear import LEContext
 from .linear_generic import LEContext as LEContextGeneric
@@ -19,18 +19,17 @@ class Equiv(object):
         """
         s1, s2 = convert_sboxes(s1, s2)
         assert_equal_sizes(s1, s2)
-        n, m = s1.m, s1.n
-
-        for cx in range(2**m):
+        n = s1.n
+        for cx in range(2**n):
             cy = s1[0] ^ s2[0 ^ cx]
-            for x in range(1, 2**m):
+            for x in range(1, 2**n):
                 if s1[x] ^ s2[x ^ cx] != cy:
                     break
             else:
                 return (cx, cy)
 
     def is_XOR_equivalent(self, other):
-        return are_XOR_equivalent(self, other)
+        return Equiv.are_XOR_equivalent(self, other)
 
     @staticmethod
     def are_linear_equivalent(s1, s2, findall=False):
@@ -87,8 +86,8 @@ class Equiv(object):
         full_res = {}
 
         # temporary unoptimal algorithm
-        for a, b in product(range(s1.insize), range(s1.outsize)):
-            xor_s1 = Equiv.new(s1[x ^ a] ^ b for x in range(s1.insize))
+        for a, b in product(range(s1.input_range()), range(s1.output_range())):
+            xor_s1 = Equiv.new(s1[x ^ a] ^ b for x in range(s1.input_range()))
             lin_res = xor_s1.is_linear_equivalent(s2, findall=findall)
             if findall and lin_res:
                 for A, B in lin_res:
@@ -131,12 +130,18 @@ class Equiv(object):
         if lin1 and lin2:
             return True
 
-        inp, out = s1.m, s1.n
+        inp, out = s1.n, s1.m
         M1 = Matrix(GF(2), 1 + inp + out, 2**inp)
         M2 = Matrix(GF(2), 1 + inp + out, 2**inp)
         for x in range(2**inp):
-            M1.set_column(x, tobin(1,1) + tobin(x, inp) + tobin(s1[x], out))
-            M2.set_column(x, tobin(1,1) + tobin(x, inp) + tobin(s2[x], out))
+            M1.set_column(
+                x,
+                Bin.concat(Bin(1, 1) + Bin(x, inp) + Bin(s1[x], out)).tuple
+            )
+            M2.set_column(
+                x,
+                Bin.concat(Bin(1, 1) + Bin(x, inp) + Bin(s2[x], out)).tuple
+            )
 
         L1 = LinearCode(M1)
         L2 = LinearCode(M2)
@@ -154,6 +159,7 @@ def assert_equal_sizes(s1, s2):
     assert s1.m == s2.m
     assert s1.n == s2.n
 
+
 def convert_sboxes(s1, s2):
     if not isinstance(s1, Equiv.cls):
         s1 = Equiv.new(s1)
@@ -162,6 +168,7 @@ def convert_sboxes(s1, s2):
     assert isinstance(s1, Equiv.cls)
     assert isinstance(s2, Equiv.cls)
     return s1, s2
+
 
 def assert_permutations(s1, s2):
     assert s1.is_permutation()

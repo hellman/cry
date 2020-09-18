@@ -1,9 +1,6 @@
-#-*- coding:utf-8 -*-
-
 import sys
 import time
 from .cache import *
-from contextlib import contextmanager
 
 
 class IntervalCheck(object):
@@ -54,3 +51,13 @@ def isiterable(s):
         return True
     except TypeError:
         return False
+
+
+from itertools import product
+
+
+def ranges(*ns, list=None):
+    if list:
+        assert not ns
+        ns = list
+    return product(*[range(n) for n in ns])

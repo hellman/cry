@@ -1,15 +1,15 @@
 import os.path as Path
 import subprocess
-
-from copy import copy
+from functools import reduce
 
 import ast
 from collections import Counter
 
+from bint import Bin
+
 from cryptools.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
 
 from cryptools.py.anf import mobius
-from cryptools.binary import tobin
 
 DDT_EXE = Path.join(Path.abspath(Path.dirname(__file__)), "ddt")
 
@@ -31,9 +31,9 @@ class Tables(object):
             ys = map(self, xs)
             dx = reduce(lambda a, b: a ^ b, xs)
             dy = reduce(lambda a, b: a ^ b, ys)
-            kddt[dx,dy] += 1
+            kddt[dx, dy] += 1
         if zero_zero:
-            kddt[0,0] = 0
+            kddt[0, 0] = 0
         return kddt
 
     def add_add_ddt(self):
@@ -44,7 +44,7 @@ class Tables(object):
                 y = self[x]
                 y2 = self[x2]
                 dy = (y2 - y) % self.outsize
-                addt[dx,dy] += 1
+                addt[dx, dy] += 1
         return addt
 
     def add_xor_ddt(self):
@@ -55,7 +55,7 @@ class Tables(object):
                 y = self[x]
                 y2 = self[x2]
                 dy = y ^ y2
-                axddt[dx,dy] += 1
+                axddt[dx, dy] += 1
         return axddt
 
     def xor_add_ddt(self):
@@ -66,7 +66,7 @@ class Tables(object):
                 y = self[x]
                 y2 = self[x2]
                 dy = (y2 - y) % self.outsize
-                axddt[dx,dy] += 1
+                axddt[dx, dy] += 1
         return axddt
 
     def cmul_xor_ddt(self, F=None):
@@ -79,7 +79,7 @@ class Tables(object):
                 y = self[x]
                 y2 = self[x2]
                 dy = y2 ^ y
-                cxddt[dx,dy] += 1
+                cxddt[dx, dy] += 1
         return cxddt
 
     def cmul_cmul_ddt(self, F=None):
@@ -91,8 +91,10 @@ class Tables(object):
                 x2 = (F.fetch_int(x) * F.fetch_int(dx)).integer_representation()
                 y = self[x]
                 y2 = self[x2]
-                dy = (F.fetch_int(y2) * F.fetch_int(y)**(self.outsize - 2)).integer_representation()
-                ccddt[dx,dy] += 1
+                dy = (
+                    F.fetch_int(y2) * F.fetch_int(y)**(self.outsize - 2)
+                ).integer_representation()
+                ccddt[dx, dy] += 1
         return ccddt
 
     def xor_cmul_ddt(self, F=None):
@@ -104,8 +106,10 @@ class Tables(object):
                 x2 = x ^ dx
                 y = self[x]
                 y2 = self[x2]
-                dy = (F.fetch_int(y2) * F.fetch_int(y)**(self.outsize - 2)).integer_representation()
-                xcddt[dx,dy] += 1
+                dy = (
+                    F.fetch_int(y2) * F.fetch_int(y)**(self.outsize - 2)
+                ).integer_representation()
+                xcddt[dx, dy] += 1
         return xcddt
 
     def minilat(self, abs=False):
@@ -139,7 +143,7 @@ class Tables(object):
         for j in range(self.in_bits):
             mask = (1 << self.in_bits) - 1
             mask ^= 1 << (self.in_bits - 1 - j)
-            res.set_column(j, tobin(anf[mask], self.out_bits))
+            res.set_column(j, Bin(anf[mask], self.out_bits).tuple)
         if right_to_left:
             res = res[::-1,::-1]
         return res

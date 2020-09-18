@@ -5,9 +5,10 @@ Some simple checks for multiset properties in S-Boxes.
 EXAMPLES::
 
     >>> from cryptools.sbox2 import SBox2
-    >>> from cryptools.binary import concat, split, ranges
+    >>> from cryptools.utils import ranges
     >>> from itertools import product
     >>> from pprint import pprint
+    >>> from bint import Bin
 
 Simple example:
 
@@ -33,7 +34,7 @@ Example with balanced and unknown:
 
     >>> f = SBox2.new.random_function(6, 3)
     >>> s = SBox2(
-    ...       concat(x, x^y, f((x << 3) | y), size=3)
+    ...       Bin.concat(*Bin.array([x, x^y, f((x << 3) | y)], n=3))
     ...       for x, y in ranges(8, 8) )
     >>> s = SBox2.new.parallel([a, b, c])
     >>> split = Split(s, 3, 3)
@@ -46,7 +47,7 @@ Example with balanced and unknown:
 from collections import defaultdict
 from itertools import product
 
-from cryptools.binary import tobin, frombin, concat, split
+from bint import Bin
 
 PERM = "p"
 CONST = "c"
@@ -82,8 +83,8 @@ class Split(object):
     def propagate_single_permutation(self, pos):
         outs_by_consts = [defaultdict(dict) for _ in range(self.num_out)]
         for x, y in self.s.graph():
-            xs = split_by_width(x, self.num_in, self.width_in)
-            ys = split_by_width(y, self.num_out, self.width_out)
+            xs = Bin(x, self.num_in * self.width_in).split(parts=self.num_in)
+            ys = Bin(y, self.num_out * self.width_out).split(parts=self.num_out)
             key = tuple(xs[i] for i in range(self.num_in) if i != pos)
             for j, y in enumerate(ys):
                 d = outs_by_consts[j][key]
@@ -130,9 +131,9 @@ class Split(object):
 
     def __getitem__(self, lst):
         assert len(lst) == self.num_in
-        x = concat(*lst, size=self.width_in)
+        x = Bin.concat(Bin.array(lst, n=self.width_in))
         y = self.s[x]
-        return split(y, size=self.width_out, parts=self.num_out)
+        return Bin(y, self.width_out).split(parts=self.num_out)
 
     def TU_decomposition(self):
         '''
@@ -179,15 +180,6 @@ class Split(object):
                 U[r].append(s[x] >> w)
             return dict(T=T, U=U, swap_input=iswap, swap_output=oswap)
         raise RuntimeError("TU-decomposition failed!")
-
-
-def split_by_width(x, n, w):
-    l = n * w
-    b = tobin(x, l)
-    res = []
-    for i in range(0, len(b), w):
-        res.append(frombin(b[i:i+w]))
-    return res
 
 
 def print_minicipher(T, latex_letter=None):
