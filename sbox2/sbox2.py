@@ -154,7 +154,7 @@ class SBox2:
         if not isinstance(other, type(self)) \
            or other.output_size() != self.input_size():
             other = type(self)(other, m=self.input_size())
-        return self.new((self[y] for x, y in other.graph()), m=self.m)
+        return type(self)((self[y] for x, y in other.graph()), m=self.m)
 
     def __pow__(self, e):
         if e < 0:
@@ -370,7 +370,6 @@ class SBox2:
         vs = list((bpr.gens()))
         res = []
         for f in self.mobius().coordinates():
-            print("f", f)
             anf = bpr(0)
             for mask, take in f.graph():
                 if not take:
@@ -401,7 +400,7 @@ class SBox2:
     # TABLES
     # =================================================
     def difference_distribution_table(self, zero_zero=True):
-        ddt = matrix(ZZ, self.input_size(), self.output_size())
+        ddt = matrix(ZZ, 2**self.output_size(), 2**self.input_size())
         for x in self.input_range():
             for dx in self.input_range()[1:]:
                 dy = self[x] ^ self[x ^ dx]
@@ -412,7 +411,7 @@ class SBox2:
     DDT = difference_distribution_table
 
     def linear_approximation_table(self, zero_zero=True):
-        lat = matrix(ZZ, self.input_size(), self.output_size(), [
+        lat = matrix(ZZ, 2**self.input_size(), 2**self.output_size(), [
             self.component(mask).to_sage_BF().walsh_hadamard_transform()
             for mask in self.output_range()
         ]).transpose()
