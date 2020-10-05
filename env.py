@@ -8,3 +8,5 @@ from cryptools.utils import IntervalCheck, sumbinom
 from cryptools.plots import save_plot
 
 from cryptools.fields import all_irreducible_polynomials, all_fields_of_dimension
+
+from cryptools.eq.affine import AffineSystem
