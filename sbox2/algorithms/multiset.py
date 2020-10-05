@@ -34,7 +34,7 @@ Example with balanced and unknown:
 
     >>> f = SBox2.new.random_function(6, 3)
     >>> s = SBox2(
-    ...       Bin.concat(*Bin.array([x, x^y, f((x << 3) | y)], n=3))
+    ...       Bin.concat(x, x^y, f((x << 3) | y), n=3)
     ...       for x, y in ranges(8, 8) )
     >>> s = SBox2.new.parallel([a, b, c])
     >>> split = Split(s, 3, 3)
