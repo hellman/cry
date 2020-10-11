@@ -155,7 +155,7 @@ Bit.ONE = Bit(1)
 
 
 def test_bit():
-    from cryptools.py.anf.symbolic import Bit
+    from cry.py.anf.symbolic import Bit
     assert str(Bit(0)) == "0"
     assert str(Bit(1)) == "1"
     assert str(Bit("x1")) == "x1"

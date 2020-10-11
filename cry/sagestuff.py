@@ -2,7 +2,7 @@
 Trying to import only required stuff from sage
 Maybe importing sage.all is too heave
 
-Though anyway now without importing sage.all in cryptools.__init__
+Though anyway now without importing sage.all in cry.__init__
 some imports fail and it is required so.
 """
 

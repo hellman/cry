@@ -7,7 +7,7 @@ from bint import Bin
 
 from random import randint, choice, shuffle
 
-from cryptools.py.anf import Bit, mobius
+from cry.py.anf import Bit, mobius
 
-from cryptools.py.containers.vector import Vector
-from cryptools.py.utils import *
+from cry.py.containers.vector import Vector
+from cry.py.utils import *

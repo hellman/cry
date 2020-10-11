@@ -7,9 +7,9 @@ from collections import Counter
 
 from bint import Bin
 
-from cryptools.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
+from cry.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
 
-from cryptools.py.anf import mobius
+from cry.py.anf import mobius
 
 DDT_EXE = Path.join(Path.abspath(Path.dirname(__file__)), "ddt")
 

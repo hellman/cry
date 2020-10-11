@@ -3,18 +3,18 @@ from collections import defaultdict, Counter
 
 from bint import Bin
 
-from cryptools.sagestuff import (
+from cry.sagestuff import (
     ZZ, Integer, lcm, matrix, GF,
     PolynomialRing,
     BooleanFunction, BooleanPolynomialRing,
 )
-from cryptools.matrix import mat_distribution
+from cry.matrix import mat_distribution
 
 from sage.crypto.sbox import SBox as Sage_SBox
 from sage.rings.polynomial.polynomial_element import is_Polynomial
 from sage.structure.element import is_Vector
 
-from cryptools.py.anf import mobius
+from cry.py.anf import mobius
 
 
 class SBox2:
@@ -502,7 +502,7 @@ def int_tuple_list_vector(v):
 # TESTS
 # ====================================================
 def test_main():
-    from cryptools.sbox2 import SBox2
+    from cry.sbox2 import SBox2
     s = SBox2([3, 4, 7, 2, 1, 1, 6, 6], m=4)
 
     assert s.n == s.input_size() == 3
@@ -561,7 +561,7 @@ def props(s):
 
 
 def test_properties():
-    from cryptools.sbox2 import SBox2
+    from cry.sbox2 import SBox2
 
     s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
     assert props(s) == {s.is_permutation, s.is_balanced}
@@ -605,7 +605,7 @@ def test_properties():
 
 
 def test_transform():
-    from cryptools.sbox2 import SBox2
+    from cry.sbox2 import SBox2
 
     s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
     assert s.xor(0, 3) == s ^ 3
@@ -613,7 +613,7 @@ def test_transform():
 
 
 def test_degrees():
-    from cryptools.sbox2 import SBox2
+    from cry.sbox2 import SBox2
 
     s = SBox2([0] * 15 + [1])
     assert s.degrees() == (4,)
@@ -633,7 +633,7 @@ def test_degrees():
 
 
 def test_inversion():
-    from cryptools.sbox2 import SBox2
+    from cry.sbox2 import SBox2
     s = SBox2([5, 6, 3, 2, 1, 7, 0, 4])
 
     assert ~s == s**(-1) == [6, 4, 3, 2, 7, 0, 1, 5]

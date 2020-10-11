@@ -1,10 +1,10 @@
 from random import randint, random, shuffle
 
-from cryptools.sagestuff import (
+from cry.sagestuff import (
     Integer, GF, PolynomialRing
 )
-from cryptools.utils import ranges
-from cryptools.sbox2 import SBox2
+from cry.utils import ranges
+from cry.sbox2 import SBox2
 
 from bint import Bin
 

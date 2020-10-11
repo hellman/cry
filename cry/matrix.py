@@ -3,7 +3,7 @@ from collections import Counter
 from copy import copy
 
 from random import shuffle
-from cryptools.sagestuff import (
+from cry.sagestuff import (
     vector, matrix, identity_matrix, random_matrix,
     GF, LinearCode
 )

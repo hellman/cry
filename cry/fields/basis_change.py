@@ -1,11 +1,10 @@
-#-*- coding:utf-8 -*-
-
 from itertools import product
 
-from cryptools.sagestuff import GF
-from cryptools.sbox2 import SBox2
+from cry.sagestuff import GF
+from cry.sbox2 import SBox2
 
 BASIS_LIST = "polynomial normal".split()
+
 
 class SubfieldDecomposition(object):
     '''

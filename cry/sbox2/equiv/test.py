@@ -1,6 +1,6 @@
 from sage.all import *
 
-from cryptools.sbox2 import SBox2
+from cry.sbox2 import SBox2
 
 N = 6
 

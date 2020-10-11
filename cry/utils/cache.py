@@ -1,30 +1,36 @@
-#-*- coding:utf-8 -*-
-
-import sys, time, os
+import time, os, logging
 import ast
 from functools import wraps
 
 import hashlib
 H = lambda s: hashlib.sha256(s).hexdigest()
 
-from cryptools.sagestuff import loads, dumps
+from cry.sagestuff import loads, dumps
+
+log = logging.getLogger("cry.cache")
 
 # old
 # def pickle_cache(fn):
 #     fname = ".cache:%s:%s" % (fn.func_name, permanent_func_hash(fn)[:16])
 #     try:
 #         res = loads(open(fname).read())
-#         print >>sys.stderr, "[i] reusing %s" % fname
+#         msg("[i] reusing %s" % fname)
 #         return res
 #     except (EOFError, IOError):
-#         print >>sys.stderr, "[i] calculating %s" % fname
+#         msg("[i] calculating %s" % fname)
 #         result = fn()
 #         open(fname, "wb").write(dumps(result))
 #         return result
 
+
+def msg(*args):
+    log.debug(" ".join(map(str, args)))
+
+
 def sage_cache(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
     def deco(func):
         @wraps(func)
         def wrapper(*a, **k):
@@ -63,7 +69,6 @@ def sage_cache(path):
     return deco
 
 
-
 def single_cache(filename=None):
     def cacher(fn):
         fname = filename or ".cache:%s" % fn.func_name
@@ -76,11 +81,11 @@ def single_cache(filename=None):
 
         new_hash = permanent_func_hash(fn)
         if hash == new_hash:
-            print >>sys.stderr, "[i] reusing %s (%s)" % (fname, new_hash)
+            msg("[i] reusing %s (%s)" % (fname, new_hash))
         else:
-            print >>sys.stderr, "[i] calculating %s (%s)" % (fname, new_hash)
+            msg("[i] calculating %s (%s)" % (fname, new_hash))
             result = fn()
-            print >>sys.stderr, "[i] saving %s (%s)" % (fname, new_hash)
+            msg("[i] saving %s (%s)" % (fname, new_hash))
             open(fname, "wb").write(dumps((new_hash, result)))
         return result
     return cacher
@@ -101,12 +106,12 @@ def line_cache(fn):
             if line:
                 res.append(ast.literal_eval(line))
         else:
-            print >>sys.stderr, "[i] cache incomplete %s: %s items" % (fname, len(res))
+            msg("[i] cache incomplete %s: %s items" % (fname, len(res)))
             raise EOFError("Cache incomplete")
-        print >>sys.stderr, "[i] reusing %s: %s items" % (fname, len(res))
+        msg("[i] reusing %s: %s items" % (fname, len(res)))
         return res
     except (EOFError, IOError):
-        print >>sys.stderr, "[i] calculating %s" % fname
+        msg("[i] calculating %s" % fname)
         fo = open(fname, "wb")
         res = []
         for obj in fn():
@@ -114,7 +119,7 @@ def line_cache(fn):
             res.append(obj)
         fo.write(":cache:finished:")
         fo.close()
-        print >>sys.stderr, "[i] calculated %s: %s items" % (fname, len(res))
+        msg("[i] calculated %s: %s items" % (fname, len(res)))
         return res
 
 

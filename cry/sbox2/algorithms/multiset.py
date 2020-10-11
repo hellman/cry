@@ -4,8 +4,8 @@ Some simple checks for multiset properties in S-Boxes.
 
 EXAMPLES::
 
-    >>> from cryptools.sbox2 import SBox2
-    >>> from cryptools.utils import ranges
+    >>> from cry.sbox2 import SBox2
+    >>> from cry.utils import ranges
     >>> from itertools import product
     >>> from pprint import pprint
     >>> from bint import Bin

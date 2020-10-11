@@ -1,15 +1,15 @@
 from random import randint
 
-from cryptools.sagestuff import GF
+from cry.sagestuff import GF
 
-from cryptools.matrix import matrix_mult_int
-from cryptools.matrix import (
+from cry.matrix import matrix_mult_int
+from cry.matrix import (
     random_matrix,
     random_invertible_matrix,
     random_permutation_matrix,
 )
 
-from cryptools.sbox2 import SBox2
+from cry.sbox2 import SBox2
 
 register = SBox2.new.register
 
