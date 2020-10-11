@@ -4,6 +4,16 @@ version = "0.2.0"
 description = "Cry: SageMath/Python Toolkit for Cryptanalytic Research"
 authors = ["hellman"]
 license = "MIT"
+readme = "README.md"
+keywords = ["cryptanalysis", "cryptography", "S-Boxes"]
+classifiers = [
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Security :: Cryptography',
+]
+
+[tool.poetry.urls]
+homepage = "http://github.com/hellman/cry"
 
 [tool.poetry.dependencies]
 python = "^3.5"
