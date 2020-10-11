@@ -153,11 +153,7 @@ def test_bound():
                 assert norm <= bound + 1
 
 
-def test():
+if __name__ == '__main__':
     test_SECCON_2020_sharsable()
     test_bound()
-    print("Tests ok!")
-
-
-if __name__ == '__main__':
-    test()
+    print("tests ok!")
