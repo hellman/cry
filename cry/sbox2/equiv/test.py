@@ -1,4 +1,4 @@
-from sage.all import *
+from cry.sagestuff import *
 
 from cry.sbox2 import SBox2
 

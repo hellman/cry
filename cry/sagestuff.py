@@ -1,14 +1,27 @@
 """
-Trying to import only required stuff from sage
-Maybe importing sage.all is too heave
+Trying to import only required stuff from sage.
+Single point of import is good.
 
-Though anyway now without importing sage.all in cry.__init__
-some imports fail and it is required so.
+Tried to import from inner modules, but probably worthless.
+Seems sage.all must be imported.
 """
 
 # sage is a gigantic mess
 
-from sage.all import *
+from sage.all_cmdline import (
+    copy,
+    Integer, Zmod, ZZ, QQ, RR, CDF, Integer, GF,
+    loads, dumps,
+    matrix, identity_matrix, random_matrix, matrix_plot,
+    vector, random_vector,
+    binomial,
+    lcm, gcd,
+    log,
+    Combinations, Permutation,
+    LinearCode,
+)
+
+from random import randint, shuffle, choice
 
 # import sage.structure
 

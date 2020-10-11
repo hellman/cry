@@ -1,4 +1,4 @@
-from sage.all import matrix, GF, Permutation
+from cry.sagestuff import matrix, GF, Permutation
 
 F2 = GF(2)
 

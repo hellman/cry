@@ -1,6 +1,4 @@
-#-*- coding:utf-8 -*-
-
-from sage.all import PolynomialRing, GF
+from cry.sagestuff import PolynomialRing, GF
 
 from .basis_change import *
 

@@ -1,4 +1,4 @@
-from sage.all import matrix, vector, GF, random_vector
+from cry.sagestuff import matrix, vector, GF, random_vector
 
 F2 = GF(2)
 
@@ -50,7 +50,7 @@ class AffineSystem:
 
 
 def test():
-    from sage.all import randint, random_matrix, choice, primes
+    from cry.sagestuff import randint, random_matrix, choice, primes
 
     ps = list(primes(20))
     for itr in range(100):

@@ -2,8 +2,8 @@ from itertools import product
 
 from bint import Bin
 
-from sage.crypto.boolean_function import BooleanFunction
-from sage.all import BooleanPolynomialRing, Integer, Matrix, GF, LinearCode
+from cry.sagestuff import BooleanPolynomialRing, Integer, matrix, GF, LinearCode
+from cry.sagestuff import BooleanFunction
 
 from .linear import LEContext
 from .linear_generic import LEContext as LEContextGeneric
@@ -131,8 +131,8 @@ class Equiv(object):
             return True
 
         inp, out = s1.n, s1.m
-        M1 = Matrix(GF(2), 1 + inp + out, 2**inp)
-        M2 = Matrix(GF(2), 1 + inp + out, 2**inp)
+        M1 = matrix(GF(2), 1 + inp + out, 2**inp)
+        M2 = matrix(GF(2), 1 + inp + out, 2**inp)
         for x in range(2**inp):
             M1.set_column(
                 x,
