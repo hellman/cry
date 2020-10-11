@@ -9,3 +9,18 @@ The most significant part is formed by S-Box analysis algorithms, implemented in
 **NOTE** Before, this library was called *cryptools*, but since this name is used on PyPI, I decided to switch to *cry*, which is shorter.
 
 Currently, there is no documentation but examples will be added soon.
+
+## Installation
+
+```bash
+# for SageMath
+$ sage pip install -U cry
+# for python3
+$ pip3 install -U cry
+```
+
+Previous python2 version (cryptools) can be found in the tag *py2-arhived*.
+
+## Development
+
+For development or building this repository, [poetry](https://python-poetry.org/) is needed.
