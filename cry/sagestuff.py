@@ -9,16 +9,16 @@ Seems sage.all must be imported.
 # sage is a gigantic mess
 
 from sage.all_cmdline import (
-    copy,
+    copy, power_mod,
     Integer, Zmod, ZZ, QQ, RR, CDF, Integer, GF,
     loads, dumps,
     matrix, identity_matrix, random_matrix, matrix_plot,
     vector, random_vector,
     binomial,
-    lcm, gcd,
-    log,
+    lcm, gcd, log,
     Combinations, Permutation,
     LinearCode,
+    floor, ceil, inverse_mod, floor,
 )
 
 from random import randint, shuffle, choice

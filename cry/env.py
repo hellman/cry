@@ -11,3 +11,11 @@ from .fields import all_irreducible_polynomials, all_fields_of_dimension
 
 from .eq.affine import AffineSystem
 from .eq.lattice import Lattice
+
+from .rsa.rsa import RSA
+
+
+def gcd_generic(u, v):
+    while v != 0:
+        u, v = v, u % v
+    return u
