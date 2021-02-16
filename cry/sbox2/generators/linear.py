@@ -24,7 +24,7 @@ def from_matrix(mat):
 
 @register
 def random_linear_permutation(n):
-    return from_matrix(random_invertible_matrix(n))
+    return from_matrix(random_invertible_matrix(GF(2), n))
 
 
 @register
