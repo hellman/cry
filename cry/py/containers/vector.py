@@ -1,6 +1,6 @@
-#-*- coding:utf-8 -*-
-
 import operator
+from functools import reduce
+
 
 class Vector(list):
     ZERO = 0
@@ -89,6 +89,12 @@ class Vector(list):
         assert isinstance(other, Vector)
         assert len(self) == len(other)
         return self.make(a & b for a, b in zip(self, other))
+
+    def __neg__(self):
+        return self.make(-a for a in self)
+
+    def __invert__(self):
+        return self.make(~a for a in self)
 
     def set(self, x, val):
         return self.make(v if i != x else val for i, v in enumerate(self))
