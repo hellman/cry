@@ -1,5 +1,5 @@
 from sage.all import (
-    convergents, EllipticCurve, Zmod, QQ,
+    EllipticCurve, Zmod, QQ,
     is_prime, inverse_mod, crt
 )
 
@@ -46,7 +46,7 @@ def test_SECCON_2020_crypto01():
     for data in ciphertexts:
         n, e, c, hint = data
         c_high, c_low = c
-        for f in convergents(e/QQ(n)):
+        for f in (e/QQ(n)).continued_fraction().convergents():
             y = f.numerator()
             x = f.denominator()
             if is_prime(x) and is_prime(y):
