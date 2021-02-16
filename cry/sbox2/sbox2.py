@@ -36,7 +36,10 @@ class SBox2:
             fld = poly.base_ring()
             if m is None:
                 m = ZZ(fld.order()-1).nbits()
-            spec = [poly.subs(x).integer_representation() for x in fld]
+            spec = [
+                poly.subs(fld.fetch_int(x)).integer_representation()
+                for x in range(len(fld))
+            ]
 
         self._S = tuple(map(int, spec))
         self.n = ZZ(len(self._S)-1).nbits()
