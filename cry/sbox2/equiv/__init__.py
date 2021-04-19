@@ -1,6 +1,6 @@
 from itertools import product
 
-from bint import Bin
+from binteger import Bin
 
 from cry.sagestuff import BooleanPolynomialRing, Integer, matrix, GF, LinearCode
 from cry.sagestuff import BooleanFunction

@@ -8,7 +8,7 @@ from cry.sagestuff import (
     GF, LinearCode
 )
 
-from bint import Bin
+from binteger import Bin
 
 
 def matrix_mult_int(mat, x):
@@ -114,7 +114,7 @@ def random_invertible_matrix(field, n):
     """
     while 1:
         m = random_matrix(field, n)
-        if not m.is_singular():
+        if m.is_invertible():
             return m
 
 

@@ -6,7 +6,7 @@ from cry.sagestuff import (
 from cry.utils import ranges
 from cry.sbox2 import SBox2
 
-from bint import Bin
+from binteger import Bin
 
 register = SBox2.new.register
 

@@ -1,7 +1,7 @@
 from random import randint
 from collections import defaultdict, Counter
 
-from bint import Bin
+from binteger import Bin
 
 from cry.sagestuff import (
     ZZ, Integer, lcm, matrix, GF,

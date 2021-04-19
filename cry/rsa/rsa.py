@@ -4,7 +4,7 @@ from cry.sagestuff import (
 )
 import warnings
 
-from bint import Bin
+from binteger import Bin
 
 
 class RSA:

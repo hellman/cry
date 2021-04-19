@@ -3,7 +3,7 @@ from itertools import product, combinations
 
 from pprint import pprint
 
-from bint import Bin
+from binteger import Bin
 
 from random import randint, choice, shuffle
 

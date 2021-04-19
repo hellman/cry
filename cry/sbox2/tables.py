@@ -5,7 +5,7 @@ from functools import reduce
 import ast
 from collections import Counter
 
-from bint import Bin
+from binteger import Bin
 
 from cry.sagestuff import ZZ, GF, Integer, matrix, randint, Combinations
 

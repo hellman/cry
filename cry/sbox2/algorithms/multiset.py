@@ -8,7 +8,7 @@ EXAMPLES::
     >>> from cry.utils import ranges
     >>> from itertools import product
     >>> from pprint import pprint
-    >>> from bint import Bin
+    >>> from binteger import Bin
 
 Simple example:
 
@@ -47,7 +47,7 @@ Example with balanced and unknown:
 from collections import defaultdict
 from itertools import product
 
-from bint import Bin
+from binteger import Bin
 
 PERM = "p"
 CONST = "c"
