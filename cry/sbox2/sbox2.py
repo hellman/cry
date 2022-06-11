@@ -446,10 +446,10 @@ class SBox2:
     def component(self, mask):
         mask = int_tuple_list_vector(mask)
         tt = [
-            Bin(y & mask).parity()
+            Bin(y & mask).parity
             for y in self
         ]
-        yield type(self)(tt, m=1)
+        return type(self)(tt, m=1)
 
     # TBD
     # def components(self, with_masks=False, with_anfs=False):
