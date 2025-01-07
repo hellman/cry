@@ -5,7 +5,7 @@ from sage.arith.misc import is_prime
 from sage.arith.misc import inverse_mod
 from sage.arith.misc import CRT as crt
 
-from bint import Bin
+from binteger import Bin
 from cry.env import RSA
 
 
