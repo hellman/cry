@@ -19,6 +19,23 @@ homepage = "http://github.com/hellman/cry"
 python = "^3.5"
 binteger = "^0.8.0"
 
+passagemath-brial = { version = "^10.4", optional = true }
+passagemath-modules = { version = "^10.4", optional = true }
+passagemath-plot = { version = "^10.4", optional = true }
+passagemath-repl = { version = "^10.4", optional = true }
+passagemath-schemes = { version = "^10.4", optional = true }
+passagemath-symbolics = { version = "^10.4", optional = true }
+
+[tool.poetry.extras]
+passagemath = [
+    "passagemath-brial",
+    "passagemath-modules",
+    "passagemath-plot",
+    "passagemath-repl",
+    "passagemath-schemes",
+    "passagemath-symbolics",
+]
+
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.1"
 

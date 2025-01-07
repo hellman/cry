@@ -1,9 +1,11 @@
-from sage.all import (
-    EllipticCurve, Zmod, QQ,
-    is_prime, inverse_mod, crt
-)
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing as Zmod
+from sage.rings.rational_field import Q as QQ
+from sage.arith.misc import is_prime
+from sage.arith.misc import inverse_mod
+from sage.arith.misc import CRT as crt
 
-from bint import Bin
+from binteger import Bin
 from cry.env import RSA
 
 
