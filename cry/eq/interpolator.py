@@ -1,6 +1,13 @@
-from sage.all import *
-
 from itertools import product
+
+try:
+    import sage.all_cmdline
+except ImportError:
+    import sage.all__sagemath_modules
+
+from sage.rings.ideal import Ideal
+from sage.misc.misc_c import prod
+from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
 
 # class Interpolator:
