@@ -1,27 +1,31 @@
-[tool.poetry]
+[project]
 name = "cry"
-version = "0.2.3"
+version = "0.2.5"
 description = "Cry: SageMath/Python Toolkit for Cryptanalytic Research"
-authors = ["hellman"]
+authors = [
+    {name = "Aleksei Udovenko", email = "aleksei@affine.group"}
+]
 license = "MIT"
 readme = "README.md"
 keywords = ["cryptanalysis", "cryptography", "S-Boxes"]
 classifiers = [
-    'Intended Audience :: Science/Research',
-    'Topic :: Scientific/Engineering :: Mathematics',
-    'Topic :: Security :: Cryptography',
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Security :: Cryptography",
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "binteger>=0.15.1"
 ]
 
-[tool.poetry.urls]
-homepage = "http://github.com/hellman/cry"
+[project.urls]
+repository = "http://github.com/hellman/cry"
 
-[tool.poetry.dependencies]
-python = "^3.5"
-binteger = "^0.8.0"
-
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^6.1.1"
 
 [build-system]
-requires = ["poetry-core>=1.0.0a5"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
