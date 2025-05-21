@@ -100,7 +100,7 @@ class Interpolator:
 
     def solve(self, order="deglex", groebner=False, debug=False):
         assert self.monos, "monos not added"
-        monos = list(self.monos)
+        #monos = list(self.monos)
 
         data = []
         for xs in self.data:
@@ -127,10 +127,11 @@ class Interpolator:
             print("kernel:", rk)
         for sol in rk.matrix():
             assert len(sol) == len(self.monos)
-            poly = 0
+            poly = []
             for c, es in zip(sol, self.monos):
                 mono = prod(x**e for x, e in zip(xs, es))
-                poly += c * mono
+                poly.append(c * mono)
+            poly = sum(poly)
             res.append(poly)
 
         if groebner and res:
